@@ -194,7 +194,7 @@ As rotas para interagir com os serviços de descoberta têm o seguinte formato:
             /devices/motionsensors/discover
 \end{verbatim}
 
-Para encontrar um dispositivo basta efetuar um pedido GET para uma destas rotas, fornecendo como parâmetros um subtipo mais outro subconjunto de parâmetros dependendo do subtipo em questão. 
+Para encontrar um dispositivo basta efetuar um pedido GET para uma destas rotas, fornecendo como parâmetros um subtipo mais outro subconjunto de parâmetros dependendo do subtipo em questão.
 
 \begin{verbatim}
             /devices/light/discover?subtype=rest&port=80
@@ -210,7 +210,7 @@ Este pedido procura por dispositivos do tipo \textit{rest} que estejam a operar 
                     "subtype":"rest",
                     "type":"Things::Light"
                 }
-            ]   
+            ]
 \end{verbatim}
 
 Basicamente trata-se de uma lista JSON com os dispositivos encontrados. Internamente são os serviços que são serializados para JSON, serializando os atributos relevantes ao funcionamento do serviço, neste caso \textit{address}, \textit{port}, \textit{subtype} e \textit{type}.

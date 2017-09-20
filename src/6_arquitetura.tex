@@ -8,11 +8,11 @@ O \textit{middleware}, devido ao seu tamanho e à sua complexidade, não será c
 
 \subsection{Hub}
 
-O \textit{hub} consiste no conceito \textit{edge device} que já foi abordado anteriormente, um dispositivo que fornece um interface para interagir com os dispositivos do utilizador. Este componente deverá fornecer camadas de compatibilidade para diversos tipos de dispositivos, de modo a resolver o problema relativo à heterogeneidade dos dispositivos IoT. 
+O \textit{hub} consiste no conceito \textit{edge device} que já foi abordado anteriormente, um dispositivo que fornece um interface para interagir com os dispositivos do utilizador. Este componente deverá fornecer camadas de compatibilidade para diversos tipos de dispositivos, de modo a resolver o problema relativo à heterogeneidade dos dispositivos IoT.
 
 Este componente será pré-instalado e configurado em dispositivos que deverão depois ser fornecidos aos utilizadores (num caso de utilização em massa). Neste caso de demonstração académica, será utilizado um Raspberry PI para simular este dispositivo. O serviço irá correr como um \textit{daemon} nestes dispositivos, sendo iniciado durante o processo de \textit{boot}.
 
-Este componente deverá fornecer uma API HTTP RESTtful, que permita interagir com os dispositivos no espaço casa, de acesso exclusivo à \textit{api}. O \textit{hub} deverá ter métodos \textit{GET} e \textit{PUT}, para manipular os dispositivos. Este métodos deverão ser acompanhados de parâmetros que identificam um dispositivo, como por exemplo, endereço IP, porta de acesso, e outros parâmetros exclusivos a um dispositivo. Estes parâmetros deverão ser obtidos em parte pelo sistema de descoberta de dispositivos presente neste componente, que procura no espaço casa dispositivos compatíveis, retornando os seus parâmetros de acesso. 
+Este componente deverá fornecer uma API HTTP RESTtful, que permita interagir com os dispositivos no espaço casa, de acesso exclusivo à \textit{api}. O \textit{hub} deverá ter métodos \textit{GET} e \textit{PUT}, para manipular os dispositivos. Este métodos deverão ser acompanhados de parâmetros que identificam um dispositivo, como por exemplo, endereço IP, porta de acesso, e outros parâmetros exclusivos a um dispositivo. Estes parâmetros deverão ser obtidos em parte pelo sistema de descoberta de dispositivos presente neste componente, que procura no espaço casa dispositivos compatíveis, retornando os seus parâmetros de acesso.
 
 O \textit{hub} é portanto \textit{stateless}, ou seja, não armazena nenhum tipo de informação ao longo do seu funcionamento, essa função está ao encargo da \textit{api}, que vamos detalhar já de seguida. Além disso, este componente irá ser exposto através de um software de \textit{tunneling}, que como já foi visto anteriormente, é uma melhor opção do que UPNP e \textit{port-forwarding} para a exposição de recursos em redes locais.
 
@@ -43,7 +43,7 @@ Um \textit{wrapper} converteria estas comunicações HTTP para métodos de uma l
 
 \begin{minted}{java}
         FooApiWrapper api = new FooApiWrapper(remoteHost);
-    
+
         Foo foo = api.getFoo(1);
 \end{minted}
 
@@ -54,11 +54,11 @@ Internamente o \textit{wrapper} faria a chamada à API remota e devolveria o res
 
 Como prova de conceito irá ser desenvolvida uma aplicação \textit{mobile}, em linguagem e sistema operativo mais à frente. A aplicação deverá fazer uma demonstração de todas as funcionalidades e operações que o \textit{middleware} implementa. Estas funcionalidades estão detalhadas na \hyperref[sec:funcionalidades]{secção} 2 do capítulo 4. Todos esses pontos serão aplicados ao resultado final da aplicação.
 
-De notar que esta aplicação apenas foi desenvolvida para efeitos de demonstração, portanto, grande parte desta dissertação será, como é óbvio, sobre o \textit{middleware} e os seus componentes. Foi efetuado um esforço significativo para implementar boas práticas arquiteturais e de programação em todo o software desenvolvido, mas a aplicação cliente poderá ficar um pouco aquém dos restantes elementos. 
+De notar que esta aplicação apenas foi desenvolvida para efeitos de demonstração, portanto, grande parte desta dissertação será, como é óbvio, sobre o \textit{middleware} e os seus componentes. Foi efetuado um esforço significativo para implementar boas práticas arquiteturais e de programação em todo o software desenvolvido, mas a aplicação cliente poderá ficar um pouco aquém dos restantes elementos.
 
 \subsection{Visão Geral}
 
-Um espaço casa deverá possui um \textit{hub} instalado, e a \textit{api} comunica com os dispositivos do espaço através deste equipamento. Com isto separamos uma componente complexa da \textit{api}, a camada de compatibilidade entre os diversos modelos de dispositivos, tornando todo o sistema mais manutenível. 
+Um espaço casa deverá possui um \textit{hub} instalado, e a \textit{api} comunica com os dispositivos do espaço através deste equipamento. Com isto separamos uma componente complexa da \textit{api}, a camada de compatibilidade entre os diversos modelos de dispositivos, tornando todo o sistema mais manutenível.
 
 \begin{figure}[H]
   \centering
@@ -91,7 +91,7 @@ Representa a casa de um utilizador, contém dados para aceder à rede local e in
 
 Todas as restantes entidades possuem uma associação direta ou indireta a um espaço casa.
 
-\paragraph*{Thing} 
+\paragraph*{Thing}
 Representa os dispositivos, contendo os dados necessários para efetuar comunicação com o mesmo. O \textit{hub} aceita uma lista de parâmetros para efetuar comunicação com um dispositivo compatível, mas como este é \textit{stateless}, não tem capacidade para os armazenar. Essa função pertence à \textit{api}, e é com recurso a esta entidade que se irá alcançar o objetivo pretendido.
 
 Cada \textit{thing} possui dois parâmetros obrigatórios: tipo e subtipo. O tipo representa a funcionalidade geral do dispositivo, por exemplo, uma luz, uma fechadura ou um termóstato. O subtipo é referente à implementação do dispositivo, ou por outras palavras, o modelo do dispositivo. Neste caso a divisão entre tipos:
@@ -122,7 +122,7 @@ Representa o estado de um dispositivo. Os dispositivos retornam estas entidades 
 
 Isto permite-nos utilizar a arquitetura REST para alterar o estado dum dispositivo com base nos verbos HTTP, \textit{PUT} e \textit{GET}, onde o primeiro altera o estado e o segundo obtém o estado de um dispositivo.
 
-\paragraph*{Scenario} 
+\paragraph*{Scenario}
 Representa um conjunto de estados que podem ser aplicados em conjunto. Tal como já foi referido anteriormente, podemos juntar estados que normalmente são aplicados ao mesmo tempo, como, desligar as luzes todas antes de o utilizador ir dormir, num só cenário que pode ser aplicado, simplificando muito a utilização da aplicação.
 
 \paragraph*{Task}
@@ -130,10 +130,10 @@ Representam as tarefas, entidades que representam uma aplicação dum estado ou 
 
 Como foi possível reparar nos exemplos referidos, temos dois tipos de tarefas, que serão agora apresentadas.
 
-\paragraph*{Triggered} 
+\paragraph*{Triggered}
 Representam as tarefas condicionais, que são aplicadas com base no estado de um outro dispositivo presente neste sistema, como no exemplo acima referido, ligar a luz da garagem quando o sensor de movimento lá colocado detetar movimento.
 
-\paragraph*{Timed} 
+\paragraph*{Timed}
 Representam tarefas que são aplicadas com base numa dada expressão temporal. A tarefa ''aplicar o cenário desligar luzes às 23:00'' é deste tipo.
 
 \section{Design}

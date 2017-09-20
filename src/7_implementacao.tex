@@ -17,9 +17,9 @@ A ordem dos repositórios também ditam a ordem de implementação dos mesmos, s
 De seguida serão apresentadas as tecnologias utilizadas para implementar a solução. Cada componente de software, o \textit{hub}, a \textit{api}, as simulações dos dispositivos e e aplicação cliente utilizam linguagens e \textit{frameworks} distintas. Aqui, iremos falar das motivações para a sua escolha.
 
 \paragraph*{Hub}
-Para o desenvolvimento deste componente recorreu-se à utilização da linguagem de programação Java, recorrendo à \textit{framework} Spark \footnote{\url{http://sparkjava.com}}. 
+Para o desenvolvimento deste componente recorreu-se à utilização da linguagem de programação Java, recorrendo à \textit{framework} Spark \footnote{\url{http://sparkjava.com}}.
 
-Java foi uma escolha óbvia devido à experiência na linguagem e ao seu poder no que toca a genéricos, que permite atingir grandes níveis de reutilização de código, algo que será essencial neste caso, dado que vários dispositivos partilham o mesmo modo de comunicação por exemplo. 
+Java foi uma escolha óbvia devido à experiência na linguagem e ao seu poder no que toca a genéricos, que permite atingir grandes níveis de reutilização de código, algo que será essencial neste caso, dado que vários dispositivos partilham o mesmo modo de comunicação por exemplo.
 
 A \textit{framework} Spark foi escolhida devido à necessidade de expor um serviço HTTP sem ser necessário associar a um modelo arquitetural, por exemplo, algumas \textit{frameworks} são feitas para utilizar MVC. Neste caso, esta \textit{framework}, que até pode ser considerado uma biblioteca devido à sua simplicidade, tem apenas como função expor um servidor HTTP.
 
@@ -32,7 +32,7 @@ Utilizando esta \textit{framework}, tarefas como a camada de \textit{ORM}, filtr
 
 \paragraph*{Simulação de Dispositivos}
 
-Para as simulações de dispositivos recorreu-se à linguagem Javascript com o \textit{runtime serverside} Node.JS, utilizando a framework \textit{express} \footnote{\url{https://expressjs.com/}}. A combinação de \textit{javascript} com o \textit{express} permite muito rapidamente desenvolver servidores web, uma vez que estes simuladores irão fornecer APIs HTTP. 
+Para as simulações de dispositivos recorreu-se à linguagem Javascript com o \textit{runtime serverside} Node.JS, utilizando a framework \textit{express} \footnote{\url{https://expressjs.com/}}. A combinação de \textit{javascript} com o \textit{express} permite muito rapidamente desenvolver servidores web, uma vez que estes simuladores irão fornecer APIs HTTP.
 
 Também se utilizou a biblioteca \textit{coap-router} \footnote{\url{https://github.com/MagicCube/coap-router}}, para criar os dispositivos que utilizam CoAP em vez de HTTP, como protocolo de comunicação.
 

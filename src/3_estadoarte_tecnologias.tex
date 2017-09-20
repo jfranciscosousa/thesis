@@ -2,9 +2,9 @@
 
 \subsection{Apple Homekit}
 
-O Apple Homekit não é uma aplicação por si só, é uma espécie de base de dados semelhante ao Passkit e ao Healthkit também desenvolvidos pela Apple. Todas estes ''kits'' são utilizados pelas respetivas aplicações, neste caso o Homekit tem a aplicação Home, o PassKit tem o Passbook e o HealthKit o Health. 
+O Apple Homekit não é uma aplicação por si só, é uma espécie de base de dados semelhante ao Passkit e ao Healthkit também desenvolvidos pela Apple. Todas estes ''kits'' são utilizados pelas respetivas aplicações, neste caso o Homekit tem a aplicação Home, o PassKit tem o Passbook e o HealthKit o Health.
 
-O Homekit neste caso tem como função armazenar uma coleção de dispositivos relativos a casas inteligentes, oferecendo ainda funcionalidades mais avançadas como \textit{triggers}, onde é possível configurar um grupo de ações a executar com base em certos \textit{triggers}, como a hora, a localização do utilizador ou com base nos dados de algum dispositivo. Por exemplo, é possível configurar o sistema de modo a que ele ligue as luzes e abra a porta principal quando o utilizador estiver nas imediações da casa, ou até, ligar ou desligar o aquecimento a uma certa hora do dia. 
+O Homekit neste caso tem como função armazenar uma coleção de dispositivos relativos a casas inteligentes, oferecendo ainda funcionalidades mais avançadas como \textit{triggers}, onde é possível configurar um grupo de ações a executar com base em certos \textit{triggers}, como a hora, a localização do utilizador ou com base nos dados de algum dispositivo. Por exemplo, é possível configurar o sistema de modo a que ele ligue as luzes e abra a porta principal quando o utilizador estiver nas imediações da casa, ou até, ligar ou desligar o aquecimento a uma certa hora do dia.
 
 O Homekit possui também integração com a Siri, o assistente pessoal presente nos sistemas operativos da Apple, o que permite controlar os dispositivos registados no Homekit através de comandos de voz, como por exemplo, ''Siri fecha a porta da garagem''.
 
@@ -13,15 +13,15 @@ O Homekit possui também integração com a Siri, o assistente pessoal presente 
 Os dados no Homekit são estruturados da seguinte forma hierárquica:
 \begin{itemize}
     \item Homes - são a unidade base de dados, que representam uma casa do utilizador. Um utilizador pode possuir várias casas geograficamente afastadas ou até dividir a sua casa em duas, como por exemplo, casa principal e anexo.
-    
+
     \item Rooms - representam as salas ou quartos de uma casa. As salas no Homekit apenas possuem um nome que as identifica, como ''sala'' ou ''cozinha'', de maneira a que se possam executar comandos deste tipo: ''ligar as luzes da sala''.
-    
-    \item Acessories - são os dispositivos ou acessórios instalados nas casas e registados em salas específicas. Caso os acessórios não sejam registados em nenhuma sala, o Homekit coloca-os num ''default room'', um local especial para dispositivos sem uma sala específica.  
-    
+
+    \item Acessories - são os dispositivos ou acessórios instalados nas casas e registados em salas específicas. Caso os acessórios não sejam registados em nenhuma sala, o Homekit coloca-os num ''default room'', um local especial para dispositivos sem uma sala específica.
+
     \item Services - são os serviços oferecidos por um dispositivo, como por exemplo, um serviço para ligar a luz de uma lâmpada. Os dispositivos podem também ter serviços internos, como um atualizador de sistema.
-    
+
     De notar que um único dispositivo pode oferecer vários serviços controlados pelo utilizador. Uma porta pode ter um serviço para a fechar e outro serviço para a abrir.
-    
+
     \item Zones - são agrupamentos opcionais de salas, como por exemplo, ''1º andar'' ou ''garagem''. As zonas, tal como as salas, possuem apenas um nome. As zonas permitem ao utilizador utilizar comandos como, ''Siri, liga as luzes do 1º andar'', que irá ligar todas as luzes das salas do 1º andar.
 \end{itemize}
 
@@ -65,7 +65,7 @@ O Weave é um protocolo de comunicação orientado à IoT, que permite que dispo
 
 Este protocolo utiliza JSON como formato e a transmissão pode ser feita em HTTPS ou em XMPP. Além disso, este protocolo é protegido com SSL/TLS e a autenticação de dispositivos é feita utilizando OAuth 2.0 nos servidores de autenticação da Google. Utilizando este esquema de autenticação, a Google pode possibilitar a partilha destes dispositivos entre diferentes utilizadores, um pouco semelhante à partilha de documentos do Google Drive.
 
-O Weave tem como objetivo fornecer um meio de comunicação entre dispositivos, smartphones e a cloud. A integração na cloud é um ponto muito forte, uma vez que com esta tecnologia aplicações poderão interagir com os dispositivos dos utilizadores, depois da autorização dos mesmos. 
+O Weave tem como objetivo fornecer um meio de comunicação entre dispositivos, smartphones e a cloud. A integração na cloud é um ponto muito forte, uma vez que com esta tecnologia aplicações poderão interagir com os dispositivos dos utilizadores, depois da autorização dos mesmos.
 
 \begin{figure}[H]
   \centering
@@ -78,13 +78,13 @@ De seguida, uma descrição das funcionalidades do Weave que se destacam:
 \begin{itemize}
 
 \item \textbf{Auto-configuração} - instalação de novos dispositivos podem ser feitas através de dispositivos Android (telemóveis) onde o utilizador efetua a autenticação do dispositivo e é redirecionado para a página da aplicação, caso o dispositivo a tenha.
-    
+
 \item \textbf{Monitorização de dispositivos} - através do portal do programador dos serviços Google, é possível analisar estatísticas dos dispositivos que utilizam Weave, nomeadamente, número de dispositivos online, distribuição de versões, distribuição de modelos de dispositivo, comandos enviados por hora.
-    
+
 \item \textbf{Over-the-air updates} - esta funcionalidade apenas funciona em dispositivos que utilizem o sistema operativo Brillo e consiste na atualização automática de dispositivos a partir do portal do programador da Google.
-   
+
 \item \textbf{Crash reports} - os programadores podem consultar o número de crashes ocorridos nos seus dispositivos assim como o número de utilizadores afetados e um log detalhado do crash em si.
-    
+
 \item \textbf{Dev Console} - é possível interagir com dispositivos protótipos, podendo testar comandos Weave sem ter que construir uma aplicação cliente. Muito útil para testar a fazer debug dos dispositivos antes de os colocar em produção.
 
 \item \textbf{Home Assistant} - utilizando os serviços cloud do Weave, é possível fazer integração com o Home Assistant da Google, uma inteligência artificial que pode ser comandada com comandos voz. Desta maneira, o utilizador pode controlar os seus dispositivos através da sua própria voz, sem ter que recorrer à utilização física das aplicações.
@@ -115,7 +115,7 @@ O projeto situa-se em \textit{open-beta}, e pode ser acedido via o portal para p
 
 \subsection{Eclipse SmartHome}
 
-O EclipseSmart Home é uma framework para o desenvolvimento de produtos direcionados a casas inteligentes. É “open-source” e completamente livre ao público geral. A filosofia dos criadores desta framework assenta no facto que a única maneira de ter uma framework verdadeiramente extensível, aberta e preparada para a evolução constante deste mercado, é tornando a mesma “open-source”, para que qualquer indivíduo possa contribuir e para que não existam exclusividades proprietárias, como acontece noutras frameworks da área. 
+O EclipseSmart Home é uma framework para o desenvolvimento de produtos direcionados a casas inteligentes. É “open-source” e completamente livre ao público geral. A filosofia dos criadores desta framework assenta no facto que a única maneira de ter uma framework verdadeiramente extensível, aberta e preparada para a evolução constante deste mercado, é tornando a mesma “open-source”, para que qualquer indivíduo possa contribuir e para que não existam exclusividades proprietárias, como acontece noutras frameworks da área.
 
 Esta framework é compatível com qualquer tipo de sistema que consiga correr a JavaVirtualMachine. É uma framework OSGi 4.2+, sendo compatível com por exemplo o RaspberryPI, e um número de outras placas de prototipagem. Isto é uma grande vantagem no desenvolvimento, já que é possível efetuar o desenvolvimento para esta framework em MacOS, Linux e Windows.
 
@@ -142,9 +142,9 @@ De seguida, um pequeno resumo sobre as \textit{features} desta framework:
 A framework deixa definir estas regras textualmente, um exemplo:
 
 \begin{Verbatim}
-ON item_id state changed 
-    IF item_id.state == desired_value 
-        THEN item_id2.state = desired_value2 
+ON item_id state changed
+    IF item_id.state == desired_value
+        THEN item_id2.state = desired_value2
 \end{Verbatim}
 
 \item \textbf{Internacionalização} - todos os elementos desta framework podem ser internacionalizados, desde que sejam providenciados os coretos ficheiros, neste caso, ficheiros de propriedades i18n Java.
@@ -169,11 +169,11 @@ ON item_id state changed
 
 O Eclipse SmartHome diferencia a sua arquitetura em dois paradigmas, o paradigma físico, que representa o estado físico do sistema, ou seja, dos dispositivos e serviços ligados aos SmartHome, e o paradigma funcional, que representa as funcionalidades do sistema disponíveis ao utilizador. Resumidamente, o paradigma físico é útil para a configuração do sistema e resolução de problemas, e o paradigma funcional é útil para a interação entre os utilizadores e o sistema.
 
-A nível aplicacional, o paradigma físico é representado por \textbf{Things} e o paradigma funcional é representado por \textbf{Items}. 
+A nível aplicacional, o paradigma físico é representado por \textbf{Things} e o paradigma funcional é representado por \textbf{Items}.
 
 \textbf{Things} são entidades que podem ser adicionadas fisicamente ao um sistema e que podem fornecer várias funcionalidades ao mesmo tempo. \textbf{Things} podem ser tanto equipamentos reais que se podem adicionar um sistema como serviços web, como um serviço de meteorologia por exemplo. As \textbf{Things} oferecem a sua funcionalidade através de \textbf{Channels}.
 
-\textbf{Items} representam as funcionalidades utilizadas pelas aplicações, neste caso, os interfaces gráficos e a lógica de automação. Estes \textbf{Items} são porventura ligados a \textbf{Thing Channels}  através de links. 
+\textbf{Items} representam as funcionalidades utilizadas pelas aplicações, neste caso, os interfaces gráficos e a lógica de automação. Estes \textbf{Items} são porventura ligados a \textbf{Thing Channels}  através de links.
 
 De seguida, os tipos de \textbf{Items} presentes nesta framework:
 
@@ -192,7 +192,7 @@ De seguida, os tipos de \textbf{Items} presentes nesta framework:
 \multicolumn{1}{|l|}{Rollershutter} & \multicolumn{1}{l|}{Typically used for blinds}                         & \multicolumn{1}{l|}{UpDown, StopMove, Percent}                    \\ \hline
 \multicolumn{1}{|l|}{String}        & \multicolumn{1}{l|}{Stores texts}                                      & \multicolumn{1}{l|}{String}                                       \\ \hline
 \multicolumn{1}{|l|}{Switch}        & \multicolumn{1}{l|}{Typically used for lights (on/off)}                & \multicolumn{1}{l|}{OnOff}                                        \\ \hline
-                                    &                                                                        &                                                                  
+                                    &                                                                        &
 \end{tabular}}
 \caption{Tipos de items do SmartHome}
 \label{smarthometypes}
@@ -206,7 +206,7 @@ No entanto, a verdadeira configuração dos sistemas são feitos através de con
 
 De seguida, um pequeno exemplo de como a \textbf{Binding} do YahooWeather funciona.
 
-A \textbf{binding} disponibiliza o serviço de meterologia sobre o formato de um \textbf{thing}, que tem como parametros de configuração a \textbf{location}, local a analisar, e o outro parâmetro é o \textbf{refresh}, que define a taxa de atualização em segundos dos dados da meteorologia. 
+A \textbf{binding} disponibiliza o serviço de meterologia sobre o formato de um \textbf{thing}, que tem como parametros de configuração a \textbf{location}, local a analisar, e o outro parâmetro é o \textbf{refresh}, que define a taxa de atualização em segundos dos dados da meteorologia.
 
 Esta \textbf{thing} possui então 3 \textbf{channels}:
 
@@ -223,7 +223,7 @@ De seguida, a configuração textual deste exemplo:
 
 \paragraph*{Things}
 \noindent
-Configuração do serviço de meteorologia. 
+Configuração do serviço de meteorologia.
 
 \begin{Verbatim}
 yahooweather:weather:berlin [ location=638242 ]
@@ -234,8 +234,8 @@ yahooweather:weather:berlin [ location=638242 ]
 Definição do \textbf{Item} \textit{Temperature}, que irá conter a temperatura retornada pelo serviço de meteorologia.
 
 \begin{Verbatim}
-Number Temperature 
-    "Outside Temperature" 
+Number Temperature
+    "Outside Temperature"
         { channel="yahooweather:weather:berlin:temperature" }
 \end{Verbatim}
 

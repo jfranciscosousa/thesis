@@ -5,7 +5,7 @@ A ''Internet of Things'' é já um campo com extensos estudos e investigações.
 
 No campo de middleware e camadas de serviço orientadas a IoT, Nastic et al. \cite{iot-provision} têm como objetivo o desenvolvimento de um \textit{middleware} para o provisionamento de sistemas IoT cloud, para uma maior flexibilidade do consumo de recursos computacionais. Os investigadores avaliam a exequibilidade deste projeto utilizando aplicações do mundo real, neste caso, aplicações de gestão e controlo de edifícios.
 
-As vantagens da computação em cloud são muitas, nomeadamente o provisionamento de recursos computacionais \textit{on-demand}, onde os utilizadores podem dinamicamente alocar recursos para as suas necessidades. Este modelo computacional permite reduzir os custos de infraestrutura para a manutenção de sistemas de informação, recorrendo a estes serviços cloud em vez de infraestruturas locais físicas. Dadas estas vantagens era de esperar que grande parte das soluções IoT tirassem partido destas soluções, no entanto, grande parte das soluções IoT estão a recorrer aos serviços cloud para virtualização de \textit{edge devices} como \textit{IoT gateways}, acabando por adotar uma abordagem de ''edge computing''. 
+As vantagens da computação em cloud são muitas, nomeadamente o provisionamento de recursos computacionais \textit{on-demand}, onde os utilizadores podem dinamicamente alocar recursos para as suas necessidades. Este modelo computacional permite reduzir os custos de infraestrutura para a manutenção de sistemas de informação, recorrendo a estes serviços cloud em vez de infraestruturas locais físicas. Dadas estas vantagens era de esperar que grande parte das soluções IoT tirassem partido destas soluções, no entanto, grande parte das soluções IoT estão a recorrer aos serviços cloud para virtualização de \textit{edge devices} como \textit{IoT gateways}, acabando por adotar uma abordagem de ''edge computing''.
 
 Apesar desta abordagem fazer o correto uso do fácil provisionamento de recursos computacionais através da virtualização de dispositivos, este método não é flexível, uma vez que cada dispositivo virtualizado é criado para executar uma tarefa específica, impedindo que os recursos na cloud sejam consumidos de forma genérica sendo necessário criar novos mecanismos de configuração e deployment, específicos para cada caso de uso. Este artigo tem como objetivo então tentar conceber um middleware de provisionamento de sistemas cloud orientados à IoT, completamente abstrato e genérico que pode ser utilizado numa variedade de casos de uso.
 
@@ -15,7 +15,7 @@ Este trabalho de investigação acaba por propor uma arquitetura para um middlew
 
 % MORE EDGE COMPUTING STUFF
 
-Ainda no panorama do ''edge computing'', Nakamura et al. \cite{iot-real-time} referem que se está a tornar possível, com a tecnologia de hoje em dia, recolher qualquer tipo de informação do ambiente. Isto leva a que se queira recolher os dados gerados continuamente por estes dispositivos IoT em tempo real. O objetivo deste estudo consiste então no desenvolvimento de um middleware onde se processe estas streams de dados em tempo real e de forma distribuída. 
+Ainda no panorama do ''edge computing'', Nakamura et al. \cite{iot-real-time} referem que se está a tornar possível, com a tecnologia de hoje em dia, recolher qualquer tipo de informação do ambiente. Isto leva a que se queira recolher os dados gerados continuamente por estes dispositivos IoT em tempo real. O objetivo deste estudo consiste então no desenvolvimento de um middleware onde se processe estas streams de dados em tempo real e de forma distribuída.
 
 O middleware fornece as seguintes funções:
 \begin{itemize}
@@ -27,9 +27,9 @@ O middleware fornece as seguintes funções:
 
 O middleware foi testado num Raspberry Pi para demonstrar a sua performance.
 
-Muita das soluções existentes consistem no uso da cloud para recolher e processar todos os dados emitidos por estes dispositivos IoT. Desta forma os dados tem que ser processados antes de poderem ser devolvidos de volta às aplicações clientes, demorando mais tempo e utilizando mais poder computacional. Este modelo não é muito adequado para comunicação e feedback em tempo real, sendo portanto necessário uma alternativa, que utilize o poder computacional dos próprios dispositivos para processar estes dados, sem ser preciso o uso de um sistema cloud complexo, assemelhando-se ao paradigma de Edge Computing. 
+Muita das soluções existentes consistem no uso da cloud para recolher e processar todos os dados emitidos por estes dispositivos IoT. Desta forma os dados tem que ser processados antes de poderem ser devolvidos de volta às aplicações clientes, demorando mais tempo e utilizando mais poder computacional. Este modelo não é muito adequado para comunicação e feedback em tempo real, sendo portanto necessário uma alternativa, que utilize o poder computacional dos próprios dispositivos para processar estes dados, sem ser preciso o uso de um sistema cloud complexo, assemelhando-se ao paradigma de Edge Computing.
 
-Esta abordagem ainda faz mais sentido hoje em dia, uma vez que os dispositivos IoT estão cada vez mais evoluídos no que toca a recursos computacionais, e assim, utiliza-se estes recursos em vez de sobrecarregar os serviços cloud. 
+Esta abordagem ainda faz mais sentido hoje em dia, uma vez que os dispositivos IoT estão cada vez mais evoluídos no que toca a recursos computacionais, e assim, utiliza-se estes recursos em vez de sobrecarregar os serviços cloud.
 
 % IOT SURVEY ISSUES
 

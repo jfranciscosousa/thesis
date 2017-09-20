@@ -1,0 +1,74 @@
+\section{Trabalho Relacionado}
+A ''Internet of Things'' é já um campo com extensos estudos e investigações. Nesta secção irão ser analisados alguns artigos de relevância para este projeto.
+
+% IOT PROVISION
+
+No campo de middleware e camadas de serviço orientadas a IoT, Nastic et al. \cite{iot-provision} têm como objetivo o desenvolvimento de um \textit{middleware} para o provisionamento de sistemas IoT cloud, para uma maior flexibilidade do consumo de recursos computacionais. Os investigadores avaliam a exequibilidade deste projeto utilizando aplicações do mundo real, neste caso, aplicações de gestão e controlo de edifícios.
+
+As vantagens da computação em cloud são muitas, nomeadamente o provisionamento de recursos computacionais \textit{on-demand}, onde os utilizadores podem dinamicamente alocar recursos para as suas necessidades. Este modelo computacional permite reduzir os custos de infraestrutura para a manutenção de sistemas de informação, recorrendo a estes serviços cloud em vez de infraestruturas locais físicas. Dadas estas vantagens era de esperar que grande parte das soluções IoT tirassem partido destas soluções, no entanto, grande parte das soluções IoT estão a recorrer aos serviços cloud para virtualização de \textit{edge devices} como \textit{IoT gateways}, acabando por adotar uma abordagem de ''edge computing''. 
+
+Apesar desta abordagem fazer o correto uso do fácil provisionamento de recursos computacionais através da virtualização de dispositivos, este método não é flexível, uma vez que cada dispositivo virtualizado é criado para executar uma tarefa específica, impedindo que os recursos na cloud sejam consumidos de forma genérica sendo necessário criar novos mecanismos de configuração e deployment, específicos para cada caso de uso. Este artigo tem como objetivo então tentar conceber um middleware de provisionamento de sistemas cloud orientados à IoT, completamente abstrato e genérico que pode ser utilizado numa variedade de casos de uso.
+
+Grande parte das abordagens de provisionamento de recursos cloud não providenciam soluções totais para as características dos sistemas que fazem uso das infraestruturas cloud, nomeadamente a variedade, a distribuição geográfica e dimensão destes. Muitas vezes durante a implementação de tais sistemas é preciso recorrer a vários softwares de provisionamento para alocar recursos na cloud, além disso,  muitas vezes é necessário a configuração manual dos “edge devices”, e por vezes, presença física no local para configurar tais dispositivos.
+
+Este trabalho de investigação acaba por propor uma arquitetura para um middleware de provisionamento de recursos cloud, que permite a configuração automática de edge devices. O middleware providencia mecanismos para o provisionamento e auto-configuração de “edge devices”, assim como a habilidade para os customizar e configurar de acordo com as necessidades de cada utilizador. Os “edge devices” efetuam assim a comunicação com os dispositivos IoT na sua rede e a “cloud” trata da gestão e configuração destes “edge devices”.
+
+% MORE EDGE COMPUTING STUFF
+
+Ainda no panorama do ''edge computing'', Nakamura et al. \cite{iot-real-time} referem que se está a tornar possível, com a tecnologia de hoje em dia, recolher qualquer tipo de informação do ambiente. Isto leva a que se queira recolher os dados gerados continuamente por estes dispositivos IoT em tempo real. O objetivo deste estudo consiste então no desenvolvimento de um middleware onde se processe estas streams de dados em tempo real e de forma distribuída. 
+
+O middleware fornece as seguintes funções:
+\begin{itemize}
+\item Distribuição de tarefas invocadas pelas aplicações clientes para sub-tarefas e a execução distribuída destas sub-tarefas pelos dispositivos IoT;
+\item Distribuição das streams de dados através de dispositivos IoT;
+\item Análise em tempo real das streams de dados;
+\item Integração de sensores e atuadores.
+\end{itemize}
+
+O middleware foi testado num Raspberry Pi para demonstrar a sua performance.
+
+Muita das soluções existentes consistem no uso da cloud para recolher e processar todos os dados emitidos por estes dispositivos IoT. Desta forma os dados tem que ser processados antes de poderem ser devolvidos de volta às aplicações clientes, demorando mais tempo e utilizando mais poder computacional. Este modelo não é muito adequado para comunicação e feedback em tempo real, sendo portanto necessário uma alternativa, que utilize o poder computacional dos próprios dispositivos para processar estes dados, sem ser preciso o uso de um sistema cloud complexo, assemelhando-se ao paradigma de Edge Computing. 
+
+Esta abordagem ainda faz mais sentido hoje em dia, uma vez que os dispositivos IoT estão cada vez mais evoluídos no que toca a recursos computacionais, e assim, utiliza-se estes recursos em vez de sobrecarregar os serviços cloud. 
+
+% IOT SURVEY ISSUES
+
+Também foram feitos extensos estudos sobre os problemas existentes no campo da IoT no que toca a funcionalidades e segurança. Ngu et al. referem na sua investigação \cite{iot-survey-issues}a necessidade e a importância do middleware, a camada de ligação entre os dispositivos IoT e as aplicações clientes, referindo um exemplo do mundo real. Além disso, é feita uma comparação de vários middlewares, e de seguida uma análise detalhada dos desafios e das tecnologias necessárias para o desenvolvimento desta camada de serviço.
+
+Esta investigação refere, como era de esperar, os desafios que advém de desenvolver soluções IoT, nomeadamente a vasta heterogeneidade dos dispositivos IoT, ou por outras palavras, os dispositivos utilizam vários protocolos de comunicação diferentes e oferecem APIs distintas tornando o desenvolvimento nesta área mais complexo do que o necessário.
+
+As arquiteturas existentes para middlewares IoT podem ser divididas nas três seguintes classes:
+\begin{itemize}
+\item \textbf{\textit{Service Oriented Architectures}} - disponibiliza uma vasta gama de dispositivos e equipamentos IoT como serviços;
+\item \textbf{\textit{Cloud-based}} - disponibiliza um serviço limitado em número e tipos de dispositivos, no entanto, coleciona e interpreta os dados dos dispositivos com facilidade pois os casos de uso estão bem definidos \textit{apriori};
+\item \textbf{\textit{Actor-based}} - coloca ênfase na arquitetura ''plug and play''  de dispositivos IoT, distribuindo os dispositivos com atores reutilizáveis na rede.
+\end{itemize}
+
+Como é óbvio, um dos componentes mais importantes é a camada de ''service discovery'', que é responsável por recolher e configurar dispositivos presentes na rede onde o middleware está a operar. Esta camada de serviço deve também recuperar a conexão de dispositivos que eventualmente a possam perder. Isto tem bastante importância, uma vez que, é bastante incómodo ter que configurar manualmente todos os dispositivos IoT numa rede.
+
+Por fim esta investigação reflete sobre a segurança e privacidade dos dados em middlewares IoT, referindo que é um dos mais importantes aspetos desta tecnologia. O artigo refere possíveis soluções e trabalhos da área que tentam resolver estes assuntos:
+\begin{itemize}
+\item \textbf{\textit{Lightweight device authentication}} - para dispositivos low-power a autenticação pode ser uma operação moderadamente pesada em termos computacionais, o artigo refere algumas pesquisas com alvo a resolver este problema. Isto aplica-se a qualquer tipo de solução para qualquer tipo de possível falha de segurança. Por vezes as soluções existentes são um pouco pesadas para estes dispositivos IoT com recursos escassos
+
+\item \textbf{\textit{Denial of service attacks}} - estes ataques tem como objetivo esgotar os recursos computacionais, principalmente memória e CPU, da camada de middleware. O artigo refere alguns trabalhos na área com soluções para este objetivo
+
+\item \textbf{\textit{End-to-End security}} - apesar de existirem protocolos de comunicação seguros na Internet, tais protocolos podem ser um pouco pesados e não indicados para a IoT. O trabalho refere algumas soluções de outros artigos.
+\end{itemize}
+
+Concluindo, os autores referem que a chave para desenvolver um sistema seguro é começar de raiz com a segurança e privacidade dos dados do sistema em mente, e não construindo a aplicação e introduzindo os mecanismos de segurança depois. Todo este artigo foi bastante útil, porque apresentou uma vasta gama de assuntos e problemas que os middlewares devem ter em conta, e portanto, será algo a rever no futuro.
+
+Um problema da IoT é o elevado número de dispositivos concorrentes a reportarem dados e estatísticas aos serviços cloud, levando a que os protocolos de comunicação mais utilizados, como o HTTP por exemplo, se tornem desadequados a este ambiente de baixo consumo energético e de recursos computacionais limitados. P. Bellavista e A. Zanni \cite{iot-mqtt-coap} tem como visão a utilização de protocolos orientados à IoT, neste caso o MQTT e o CoAP, para melhorar a escalabilidade e a eficiência das plataformas IoT cloud. Os investigadores também referem a emergência de soluções de edge computing, recorrendo a edge devices para ''pré-processar'' os dados emitidos pelos dispositivos IoT.
+
+Ambos os protocolos foram desenvolvidos especialmente para aplicações na área da IoT, motivados pela necessidade de efetuar comunicação em larga escala utilizando o menor número de recursos possíveis, portanto são otimizados para as mensagens serem extremamente pequenas em tamanho, recorrendo a cabeçalhos otimizados para o efeito.
+
+O MQTT, \textit{Message Queue Telemetry Transport} é um protocolo de comunicação ''publish-subscribe'' baseado em TCP, onde cada mensagem possui um tópico, e vários clientes podem subscrever esse tópico para receber todas as mensagens publicadas utilizando esse tópico. Digamos que um tópico é semelhante a um URL. Os clientes enviam as mensagens para um ''MQTT broker'', que irá distribuir depois as mensagens pelos ''subscribers''. Uma funcionalidade bastante icónica do MQTT é o nível variável de ''Quality of Service'', existindo 3 níveis diferentes, QoS 0, QoS 1 e QoS 2. Com cada nível de QoS a fiabilidade aumenta, mas a performance diminui.
+
+O CoAP, \textit{Constrained Application Protocol}, é um protocolo de comunicação baseado em UDP, muito semelhante ao HTTP, mas otimizado para ambientes de recursos computacionais escassos e com a otimização da utilização da largura de banda de dados disponível. O protocolo foi desenvolvido com a arquitetura REST em mente, sendo portanto muito fácil de migrar sistemas desenvolvidos em HTTP para este protocolo. Este protocolo tem ainda suporte para a descoberta de serviços e recursos na rede, assim como mecanismos de "publish-subscribe", semelhantes ao MQTT. Leonard Richardson aborda a utilização de CoAP no desenvolvimento de \textit{Restful Web APIs}, no seu livro \cite{richardson2013restful}, demonstrando as capacidades deste protocolo.
+
+Conhecer ambos estes protocolos é bastante importante, porque a utilização destes protocolos verifica uma adesão crescente, portanto o middleware a projetar durante esta tese deverá ser capaz de suportar todos estes protocolos emergentes.
+
+%HOME AUTOMATION
+
+No que toca à \textit{home automation} em si, extensos estudos e trabalhos foram publicados, por exemplo, \cite{iot-home-automation} e \cite{iot-home-automation-android} demonstram a utilização do Raspberry PI no desenvolvimento de sistemas de \textit{home automation} acessíveis via navegador web e aplicação móvel. A segurança e os perigos ao meio ambiente também são aspetos importantes que não devem ser postos de parte, por exemplo, \cite{iot-home-automation-android} tece várias considerações sobre os problemas que as baterias utilizadas nos dispositivos IoT causam ao meio ambiente. Frequências rádio são também analisadas e ultimamente determinadas como seguras, nomeadamente a frequência normal das redes WiFi.
+
+Em grande parte do trabalho realizado nesta área, as funcionalidades são um ponto forte como é óbvio, mas a eficiência e poupança de energia são também fatores bastante importantes, sendo as várias formas de comunicação \textit{wireless} escrutinadas para encontrar as mais eficientes e de menor custo, como se pode ver em \cite{iot-home-automation-overview}.

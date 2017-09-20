@@ -1,0 +1,44 @@
+\documentclass[
+%  % Replace oneside by twoside if you are printing your thesis on both sides
+%  % of the paper, leave as is for single sided prints or for viewing on screen.
+  oneside,
+%  %twoside,
+  11pt, a4paper,
+  footinclude=true,
+  headinclude=true,
+  cleardoublepage=empty
+]{scrbook}
+
+
+\input{src/0_settings.tex}
+
+\begin{document}
+
+\input{src/0_capa.tex}
+
+\pagenumbering{gobble}
+\tableofcontents
+\listoffigures
+\listoftables
+\pagenumbering{arabic}
+
+\input{src/1_introducao.tex}
+
+\input{src/2_contextualizacao.tex}
+
+\input{src/3_estadoarte.tex}
+
+\input{src/4_problemas-desafios.tex}
+
+\input{src/5_metodologia.tex}
+
+\input{src/6_arquitetura.tex}
+
+\input{src/7_implementacao.tex}
+
+\newpage
+\nocite{*}
+\chapter{Bibliografia}
+\printbibliography[heading=none]
+
+\end{document}

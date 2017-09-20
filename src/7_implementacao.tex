@@ -1,0 +1,39 @@
+\chapter{Implementação}
+
+Neste capítulo irá ser explicado todo o processo da implementação, desde as escolhas das tecnologias e às metodologias de desenvolvimento aos detalhes e pormenores de implementação de todos os componentes.
+
+Após a definição da arquitetura, foram criados no sistema de controlo de versões remoto \textit{Github} para a implementação da plataforma:
+\begin{itemize}
+    \item Simuladores de dispositivos - \url{https://github.com/um-homewatch/api}
+    \item \textit{Hub} - \url{https://github.com/um-homewatch/hub}
+    \item \textit{Api} - \url{https://github.com/um-homewatch/stub-devices}
+    \item \textit{Wrapper} da \textit{api} - \url{https://github.com/um-homewatch/js-wrapper}
+    \item Aplicação cliente - \url{https://github.com/um-homewatch/app}
+\end{itemize}
+
+A ordem dos repositórios também ditam a ordem de implementação dos mesmos, seguindo a metodologia incremental e iterativa, ondem os componentes foram implementados incrementalmente. O \textit{hub}, a \textit{api} e o \textit{wrapper} exibem todo o método de \textit{continuous integration}, recorrendo ao \textit{GitHub} e ao \textit{Travis}, enquanto que a \textit{api} é \textit{deployed} no \textit{Heroku}.
+
+\section{Tecnologias}
+De seguida serão apresentadas as tecnologias utilizadas para implementar a solução. Cada componente de software, o \textit{hub}, a \textit{api}, as simulações dos dispositivos e e aplicação cliente utilizam linguagens e \textit{frameworks} distintas. Aqui, iremos falar das motivações para a sua escolha.
+
+\paragraph*{Hub}
+Para o desenvolvimento deste componente recorreu-se à utilização da linguagem de programação Java, recorrendo à \textit{framework} Spark \footnote{\url{http://sparkjava.com}}. 
+
+Java foi uma escolha óbvia devido à experiência na linguagem e ao seu poder no que toca a genéricos, que permite atingir grandes níveis de reutilização de código, algo que será essencial neste caso, dado que vários dispositivos partilham o mesmo modo de comunicação por exemplo. 
+
+A \textit{framework} Spark foi escolhida devido à necessidade de expor um serviço HTTP sem ser necessário associar a um modelo arquitetural, por exemplo, algumas \textit{frameworks} são feitas para utilizar MVC. Neste caso, esta \textit{framework}, que até pode ser considerado uma biblioteca devido à sua simplicidade, tem apenas como função expor um servidor HTTP.
+
+\paragraph*{Api}
+Este componente, sendo o mais complexo de todos, necessita de uma \textit{framework} mais evoluída, portanto decidiu-se utilizar \textit{Ruby on Rails} e portanto a linguagem de programação \textit{Ruby}.
+
+Esta \textit{framework} foi uma escolha óbvia, mais uma vez devido à experiência em trabalhos académicos passados, e também devido à simplicidade de utilização. Utilizando \textit{Ruby on Rails} podemos dedicar mais tempo a funcionalidades em vez de detalhes de implementação. Outra motivação é a existência de um bom suporte de \textit{background tasks}, que como já se falou anteriormente, era um desafio a enfrentar, para se poder implementar as tarefas automatizadas.
+
+Utilizando esta \textit{framework}, tarefas como a camada de \textit{ORM}, filtragem de parâmetros dos pedidos HTTP, serialização de objetos para \textit{JSON} são todas tratadas pelo \textit{Rails}, podendo dar assim mais atenção a outros aspetos mais importantes da aplicação.
+
+\paragraph*{Simulação de Dispositivos}
+
+Para as simulações de dispositivos recorreu-se à linguagem Javascript com o \textit{runtime serverside} Node.JS, utilizando a framework \textit{express} \footnote{\url{https://expressjs.com/}}. A combinação de \textit{javascript} com o \textit{express} permite muito rapidamente desenvolver servidores web, uma vez que estes simuladores irão fornecer APIs HTTP. 
+
+Também se utilizou a biblioteca \textit{coap-router} \footnote{\url{https://github.com/MagicCube/coap-router}}, para criar os dispositivos que utilizam CoAP em vez de HTTP, como protocolo de comunicação.
+
+\section{}

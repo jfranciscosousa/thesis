@@ -1,0 +1,242 @@
+\subsection{Api}
+
+A \textit{api} é a parte central do projeto, contendo toda a lógica e funcionalidades para responder aos problemas encontrados. Como já foi explicado anteriormente, a \textit{api} irá adotar uma arquitetura \textit{REST}, utilizando HTTP como protocolo de transporte. Nesta secção será delineada a arquitetura interna da \textit{api} e depois os vários \textit{endpoints} e métodos da aplicação.
+
+Como arquitetura deverá ser adotado o modelo MVC, que efetua a correta separação entre as três camadas essenciais de uma aplicação \textit{enterprise}, dados, lógica de negócio e apresentação, que mapeia para os conceitos, \textit{model}, \textit{controller}, \textit{view}. Este padrão é bastante predominante em aplicações web, inclusive APIs REST, porque torna muito mais manutenível e legível, um sistema complexo com vários tipos de modelos e operações. Além desta abordagem será utilizada uma \textit{service layer}, para efetuar operações complicadas de mais para aparecer num \textit{controller}.
+
+Neste cenário, os \textit{models} são apenas \textit{placeholders} para os dados vindos da base de dados, sendo utilizado qualquer tipo de camada ORM para efetuar o mapeamento de dados. Os \textit{controllers} têm como objetivo receber os parâmetros dos pedidos à API, efetuando operações necessárias na base de dados, através da camada ORM, recorrendo a \textit{service objects} quando a lógica se torna complexa demais.
+
+Ao contrário do \textit{hub}, que utilizava apenas um subconjunto muito simples da arquitetura REST, esta parte do projeto já aumenta bastante de complexidade, e portanto serão detalhadas as ações REST utilizadas.
+Como é normal em \textit{designs} REST, as aplicações são divididas em recursos, como por exemplo ''utilizadores'' ou ''casas'', e cada recurso possui métodos CRUD para serem manipulados. Utilizando HTTP, os recursos são representados por URLs e são utilizados os métodos do protocolo para manipular os recursos. De seguida, uma especificação das ações REST mais comuns a sua implementação em HTTP.
+
+\begin{table}[H]
+\centering
+  \begin{tabularx}{\textwidth}{ | l | c | c | X | }
+    \hline
+    Ação & Método HTTP & Identificador de Recurso & Descrição\\  \hline
+    INDEX & GET & /recurso & Obtém todos os elementos presentes neste recurso\\ \hline
+    SHOW & GET & /recurso/:id & Obtém um elemento identificado pelo parâmetro variável ''id'' \\ \hline
+    CREATE & POST & /recurso & Adiciona um novo elemento ao recurso com os parâmetros fornecidos no \textit{body} do pedido HTTP\\ \hline
+    UPDATE & PUT/PATCH & /recurso/:id & Atualiza um elemento identificado pelo parâmetro variável ''id'' com os parâmetros fornecidos no \textit{body} do pedido HTTP \\ \hline
+    DESTROY & DELETE & /recurso/:id & Apaga um elemento identificado pelo parâmetro variável ''id'' \\ \hline
+  \end{tabularx}
+  \caption{Ações REST}
+\end{table}
+
+Portanto, esta aplicação é composta por recursos, cada recurso sendo manipulado por um \textit{controller}, fazendo alterações no respetivo \textit{model}, sendo as suas alterações representadas pela sua \textit{view}, que neste caso são simples classes de utilidade que serializam objetos para JSON. Os \textit{controllers} serão compostos pelas ações da tabela acima, sendo cada ação um método no \textit{controller}, depois cada método será mapeado para uma rota, que é uma combinação de um URL com um método HTTP, semelhante ao que vimos na tabela 2.
+
+
+% FAZER UM DIAGRAMA AQUI SFF
+
+
+
+\subsubsection{Recursos}
+
+Os recursos que compõem esta parte do projeto são baseados no modelo de domínio feito anteriormente, havendo quase um mapeamento perfeito do modelo para recursos da aplicação. De seguida, serão apresentados os diferentes recursos, as rotas de acesso aos mesmos, assim como o formato dos elementos dos diferentes recursos. O formato dos elementos segue os mesmos formatos da especificação JSON, porque de facto são objetos em JSON, tendo os seguintes tipos:
+\begin{itemize}
+    \item string
+    \item number
+    \item object (outro objeto JSON)
+    \item array
+    \item boolean
+    \item null
+\end{itemize}
+
+\paragraph*{Users}
+
+Segue exatamente a mesma lógica da entidade \textit{User} do modelo de domínio, representado os utilizadores da aplicação e servindo como base para os mecanismos de autenticação.
+
+Este recurso é um pouco diferente do habitual, sendo um recurso singular, ou seja, não tem nenhum identificador nem mecanismos de listagem (ação \textit{index}). O objetivo é que este recurso seja utilizado para o registo de novos utilizadores assim como a obtenção e atualização dos mesmos. O identificador deverá ser o próprio mecanismo de autenticação, através de um \textit{token} presente nos cabeçalhos dos pedidos.
+
+\textbf{Ações}
+\begin{itemize}
+    \item POST /users -> CREATE
+    \item GET /users/me -> SHOW
+    \item PUT/PATCH /users/me -> UPDATE
+\end{itemize}
+
+\textbf{Formato dos objetos de entrada}
+\begin{itemize}
+    \item name - string
+    \item email - string
+    \item password - string
+    \item password\_confirmation - string
+\end{itemize}
+
+\textbf{Formato dos objetos de saída}
+\begin{itemize}
+    \item id - number
+    \item name - string
+    \item email - string
+\end{itemize}
+
+\paragraph*{Homes}
+
+Este recurso representam as diversas casas dos utilizadores, contendo informação para interagir com os dispositivos dentro da casa do utilizador através dum \textit{hub}. Essencialmente, uma casa é o objeto representativo do \textit{hub}, sendo o interface de comunicação entre o utilizador e os seus dispositivos. De notar a existência de um \textit{id} no objeto de saída, que é dado ao objeto depois da sua gravação na base de dados.
+
+\textbf{Ações}
+\begin{itemize}
+    \item GET /homes -> INDEX
+    \item POST /homes -> CREATE
+    \item GET /homes/:id -> SHOW
+    \item PUT/PATCH /homes/:id -> UPDATE
+    \item DELETE /homes/:id -> DESTROY
+\end{itemize}
+
+\textbf{Formato dos objetos de entrada}
+\begin{itemize}
+    \item name - string
+    \item location - string
+    \item tunnel - object
+\end{itemize}
+
+\textbf{Formato dos objetos de saída}
+\begin{itemize}
+    \item id - number
+    \item name - string
+    \item location - string
+    \item tunnel - object
+    \item ip\_address - string
+\end{itemize}
+
+Os atributos \textit{name} e \textit{location} são apenas utilidades para o próprio utilizador categorizar a sua casa na aplicação, já o \textit{tunnel} é um objeto que contém informação para conectar com o \textit{hub} na casa do utilizador. Internamente, a \textit{api} atribui um endereço IP á casa, o mesmo IP proveniente do pedido HTTP. Na próxima secção, onde irão ser detalhados os aspetos da implementação mais importantes, irá ser delineado a tecnologia utilizada na tunelização entre o \textit{hub} e a \textit{api}.
+
+\paragraph*{Things}
+
+Também conhecido como ''coisas'', é um termo utilizado para definir os dispositivos dos utilizadores, presentes numa das suas casas. Cada \textit{thing} possui as mesmas informações que são enviadas para os \textit{ThingServices} no \textit{hub}, ou seja, parâmetros como o \textit{subtype}, \textit{address} entre outros são todos armazenados neste recurso. Os dispositivos pertencem a uma casa e portanto a um utilizador (via esta ultima relação).
+
+\textbf{Ações}
+\begin{itemize}
+    \item GET /homes/:home\_id/things -> INDEX
+    \item POST /homes/:homes\_id/things -> CREATE
+    \item GET /things/:id -> SHOW
+    \item PUT/PATCH /things/:id -> UPDATE
+    \item DELETE /things/:id -> DESTROY
+\end{itemize}
+
+Nestas ações já se pode ver \textit{nesting} de rotas, uma vez que é necessário saber a que casa pertencem os dispositivos. Este \textit{nesting} é superficial, ou seja, se fornecido o \textit{id} de um dispositivo já não é preciso fornecer o \textit{id} de uma casa.
+
+\textbf{Formato dos objetos de entrada}
+\begin{itemize}
+    \item name - string
+    \item type - string
+    \item subtype - string
+    \item connection\_info - object
+\end{itemize}
+
+\textbf{Formato dos objetos de saída}
+\begin{itemize}
+    \item id - number
+    \item name - string
+    \item type - string
+    \item subtype - string
+    \item connection\_info - object
+\end{itemize}
+
+O atributo \textit{name}, mais uma vez, só serve para caracterizar o dispositivo, não tendo nenhuma funcionalidade em específico. O tipo e subtipo são essenciais para comunicar com os dispositivos através do \textit{hub}, sendo os restantes parâmetros que variam de acordo com o subtipo fornecidos através do atributo variável \textit{connection\_info}.
+
+As \textit{things} terão métodos para obter e alterar o seu estado, \textit{getStatus} e \textit{putStatus} utilizando o objeto \textit{tunnel} de uma \textit{home} para estabelecer conexão. Estes métodos serão utilizados noutro recurso para expor estes mecanismos na \textit{api}.
+
+\paragraph*{Things Status}
+
+Este recurso permite obter os estados dos dispositivos, evocando os métodos do \textit{get} e \textit{put} dos \textit{ThingServices} presentes no \textit{hub}. Internamente é efetuada uma chamada à API do \textit{hub} através do túnel presente na \textit{home} da \textit{thing} desejada.
+
+\textbf{Ações}
+\begin{itemize}
+    \item GET /things/:thing\_id/status -> INDEX
+    \item PUT/PATCH /things/:thing\_id/status -> UPDATE
+\end{itemize}
+
+O formato dos objetos depende do tipo da \textit{thing} fornecida, estes formatos podem ser inferidos através da figura \ref{fig:things-hub}, que apresenta os tipos diferentes de \textit{things} e os seus atributos.
+
+\paragraph*{Things Discovery}
+
+De uma maneira semelhante ao recurso anterior, este permite aceder ao serviço de descoberta de dispositivos presente num \textit{hub}, invocando a API deste a partir do \textit{tunnel}.
+
+\textbf{Ações}
+\begin{itemize}
+    \item GET /homes/:home\_id/discovery -> INDEX
+\end{itemize}
+
+O formato das respostas é exatamente igual às respostas do \textit{hub}, que podem ser vistas na ultima secção.
+
+%SENARIOS
+
+\paragraph*{Scenarios}
+
+Os cenários, como já vimos anteriormente, são um conjunto de dispositivos e os respetivos estados que devem ser lhes aplicado. Essencialmente este recurso é o ponto de partida para a funcionalidade dos cenários, que ainda é composta por mais outros dois recursos. Cada cenário pertence a uma casa.
+
+\textbf{Ações}
+\begin{itemize}
+    \item GET /homes/:home\_id/scenarios -> INDEX
+    \item POST /homes/:homes\_id/scenarios -> CREATE
+    \item GET /scenarios/:id -> SHOW
+    \item PUT/PATCH /scenarios/:id -> UPDATE
+    \item DELETE /scenarios/:id -> DESTROY
+\end{itemize}
+
+\textbf{Formato dos objetos de entrada}
+\begin{itemize}
+    \item name - string
+\end{itemize}
+
+\textbf{Formato dos objetos de saída}
+\begin{itemize}
+    \item id - number
+    \item name - string
+    \item scenario\_things - array
+\end{itemize}
+
+O atributo \textit{name}, tal como nos recursos anteriores, é apenas um campo identificativo útil para o utilizador nomear os seus cenários. De notar que no objeto de saída existe um atributo do tipo \textit{array} chamado de \textit{scenario\_things}, que na verdade consiste noutro recurso que vamos ver já de seguida.
+
+\paragraph*{Scenario Things}
+
+Nos cenários é referido que os mesmos consistem num conjunto de dispositivos e os respetivos estados, no entanto estes não foram mencionados, isto porque foi necessário colocar-los noutro recurso devido à sua pluralidade. Um \textit{scenario thing} consiste então na combinação de um estado com um dispositivo, sendo o estado um elemento variável de formato igual aos objetos do recurso \textit{Thing Status}. Em linguagem natural, uma instância de \textit{scenario thing} pode ser ''uma luz apagada'' ou ''uma porta aberta''. Tendo este recurso separado dos cenários podemos então combinar várias \textit{scenario things} num só \textit{scenario} podendo ao mesmo tempo ''fechar uma porta'' e ''ligar uma luz''. Um \textit{scenario thing} pertence então a um \textit{scenario}, podendo este último ter vários \textit{scenario things}.
+
+\textbf{Ações}
+\begin{itemize}
+    \item GET /scenarios/:scenarios\_id/things -> INDEX
+    \item POST /scenarios/:scenarios\_id/things -> CREATE
+    \item GET /scenarios/:scenarios\_id/things/:id -> SHOW
+    \item PUT/PATCH /scenarios/:scenarios\_id/things/:id -> UPDATE
+    \item DELETE /scenarios/:scenarios\_id/things/:id -> DESTROY
+\end{itemize}
+
+\textbf{Formato dos objetos de entrada}
+\begin{itemize}
+    \item status - object
+    \item thing\_id - number
+\end{itemize}
+
+\textbf{Formato dos objetos de saída}
+\begin{itemize}
+    \item id - number
+    \item status - object
+    \item thing - object
+\end{itemize}
+
+\paragraph*{Scenario Applier}
+
+No que toca a cenários só falta mesmo um mecanismo para aplicar o mesmo. Este exemplo também demonstra bem a diferença entre REST e outras abordagens como SOAP. Em SOAP provavelmente teríamos um método remoto \textit{applyScenario} que seria invocado pelo cliente, no entanto, em REST apenas temos recursos e métodos os métodos base do HTTP, e portanto criámos um recurso chamado de \textit{Scenario Applier}, chamando o método POST no mesmo (porque se está a invocar alterações no servidor, portanto é boa prática usar POST). Este é um dos poucos recursos sem modelos ou persistência de dados associados.
+
+\textbf{Ações}
+\begin{itemize}
+    \item POST /scenarios/:scenarios\_id/apply -> CREATE
+\end{itemize}
+
+Este recurso não tem nenhum tipo de objeto de entrada ou saída, enviando o \textit{body} dos pedidos em branco, respondendo apenas com os \textit{status codes} apropriados.
+
+\paragraph*{Timed Tasks}
+
+Durante a fase conceptual já foi definido o conceito de tarefas, ou \textit{tasks}, basicamente consiste na aplicação de um estado a um dispositivo, ou de vários estados a vários dispositivos (um cenário no fundo), de acordo com uma dada condição. Neste caso a condição é uma expressão temporal, que indica quando uma dada tarefa deve ser aplicada.
+
+Para definir a expressão temporal irão ser utilizadas expressões \textit{cron}, que permitem grande flexibilidade na temporização de tarefas. Desta maneira conseguimos definir temporizadores bastante flexíveis e precisos como pode ser notado nos seguintes exemplos:
+\begin{itemize}
+    \item 0 9 * * * - todos os dias às 9 horas
+    \item 0 10 * * 1 - todas as segundas às 10h
+    \item 0 20 * * 1,5 - todas as segundas e sextas às 20h
+    \item */5 * * * * - de 5 em 5 minutos
+\end{itemize}
+
+As expressões \textit{cron} indicam portanto intervalos de tempo podendo escolher os dias da semana e do mês onde as mesmas correm assim como os minutos e horas a que as mesmas devem correr. Recorrendo ao comando \textit{man} \footnote{\url{https://linux.die.net/man/1/crontab}} de sistemas UNIX podemos saber mais sobre o \textit{crontab}, o \textit{scheduler} de tarefas destes sistemas, que usam estas tais expressões para definir os intervalos a que as tarefas devem ser executadas.
+

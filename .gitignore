@@ -1,0 +1,15 @@
+_minted-main/
+*.bbl
+*.blg
+*.aux
+*.bcf
+*.dvi
+*.fdb_latexmk
+*.lof
+*.lot
+*.run.xml
+*.toc
+*.upa
+*.upb
+*.fls
+*.pyg

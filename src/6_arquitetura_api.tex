@@ -240,3 +240,7 @@ Para definir a expressão temporal irão ser utilizadas expressões \textit{cron
 
 As expressões \textit{cron} indicam portanto intervalos de tempo podendo escolher os dias da semana e do mês onde as mesmas correm assim como os minutos e horas a que as mesmas devem correr. Recorrendo ao comando \textit{man} \footnote{\url{https://linux.die.net/man/1/crontab}} de sistemas UNIX podemos saber mais sobre o \textit{crontab}, o \textit{scheduler} de tarefas destes sistemas, que usam estas tais expressões para definir os intervalos a que as tarefas devem ser executadas.
 
+\paragraph*{Triggered Tasks}
+
+Já possuimos tarefas encadeadas à base de tempo, faltando o outro tipo que são ativadas com base no valor de um certo dispositivo. Nestes cenários de IoT aplicados no espaço casa, é muito comum os utilizadores quererem que certos comportamentos sejam programados de acordo com certas mudanças no ambiente, por exemplo, um cenário comum é ligar luzes utilizando sensores de movimento, o que é possível fazer no nosso caso porque possuímos o tipo base para cada um deste dispositivos.
+

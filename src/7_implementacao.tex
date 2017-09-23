@@ -11,7 +11,7 @@ Após a definição da arquitetura, foram criados no sistema de controlo de vers
     \item Aplicação cliente - \url{https://github.com/um-homewatch/app}
 \end{itemize}
 
-A ordem dos repositórios também ditam a ordem de implementação dos mesmos, seguindo a metodologia incremental e iterativa, ondem os componentes foram implementados incrementalmente. O \textit{hub}, a \textit{api} e o \textit{wrapper} exibem todo o método de \textit{continuous integration}, recorrendo ao \textit{GitHub} e ao \textit{Travis}, enquanto que a \textit{api} é \textit{deployed} no \textit{Heroku}.
+A ordem dos repositórios também ditam a ordem de implementação dos mesmos, seguindo a metodologia incremental e iterativa, onde os componentes foram implementados incrementalmente. O \textit{hub}, a \textit{api} e o \textit{wrapper} exibem todo o método de \textit{continuous integration}, recorrendo ao \textit{GitHub} e ao \textit{Travis}, enquanto que a \textit{api} é \textit{deployed} no \textit{Heroku}.
 
 \section{Tecnologias}
 De seguida serão apresentadas as tecnologias utilizadas para implementar a solução. Cada componente de software, o \textit{hub}, a \textit{api}, as simulações dos dispositivos e e aplicação cliente utilizam linguagens e \textit{frameworks} distintas. Aqui, iremos falar das motivações para a sua escolha.
@@ -38,7 +38,7 @@ Também se utilizou a biblioteca \textit{coap-router} \footnote{\url{https://git
 
 \section{Detalhes}
 
-Nesta secção irão ser detalhados alguns aspetos de uma importância acrescida, como o mecanismo de \textit{tunneling} que efetua a ligação entre vários \textit{hubs} e a \textit{api}, assim como elementos de meta-programação que permitem o crescimento do sistema em termos de dispositivos suportados, reduzindo o tempo de implementação e a manutibilidade destes componentes.
+Nesta secção irão ser detalhados alguns aspetos de uma importância acrescida, como o mecanismo de \textit{tunneling} que efetua a ligação entre vários \textit{hubs} e a \textit{api}, assim como elementos de meta-programação que permitem o crescimento do sistema em termos de dispositivos suportados, reduzindo o tempo de implementação e a manutenibilidade destes componentes.
 
 \subsubsection{Tunneling}
 
@@ -46,9 +46,9 @@ falar do ngrok e como é utilizado e as suas vantagens
 
 \subsection{Meta-Programação}
 
-falar dos elementos de meta programaçao no hub (reflections e autoloading das Thing classes)
+falar dos elementos de meta programação no hub (reflections e autoloading das Thing classes)
 
-falar também daas comparaçoes e definiçoes em runtime nas triggered tasks
+falar também das comparações e definições em runtime nas triggered tasks
 
 \subsubsection{Hub}
 

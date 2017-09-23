@@ -60,7 +60,7 @@ Este recurso é um pouco diferente do habitual, sendo um recurso singular, ou se
     \item name - string
     \item email - string
     \item password - string
-    \item password\_confirmation - string
+    \item password{\_}confirmation - string
 \end{itemize}
 
 \textbf{Formato dos objetos de saída}
@@ -96,7 +96,7 @@ Este recurso representam as diversas casas dos utilizadores, contendo informaç�
     \item name - string
     \item location - string
     \item tunnel - object
-    \item ip\_address - string
+    \item ip{\_}address - string
 \end{itemize}
 
 Os atributos \textit{name} e \textit{location} são apenas utilidades para o próprio utilizador categorizar a sua casa na aplicação, já o \textit{tunnel} é um objeto que contém informação para conectar com o \textit{hub} na casa do utilizador. Internamente, a \textit{api} atribui um endereço IP á casa, o mesmo IP proveniente do pedido HTTP. Na próxima secção, onde irão ser detalhados os aspetos da implementação mais importantes, irá ser delineado a tecnologia utilizada na tunelização entre o \textit{hub} e a \textit{api}.
@@ -107,8 +107,8 @@ Também conhecido como ''coisas'', é um termo utilizado para definir os disposi
 
 \textbf{Ações}
 \begin{itemize}
-    \item GET /homes/:home\_id/things -> INDEX
-    \item POST /homes/:homes\_id/things -> CREATE
+    \item GET /homes/:home{\_}id/things -> INDEX
+    \item POST /homes/:homes{\_}id/things -> CREATE
     \item GET /things/:id -> SHOW
     \item PUT/PATCH /things/:id -> UPDATE
     \item DELETE /things/:id -> DESTROY
@@ -121,7 +121,7 @@ Nestas ações já se pode ver \textit{nesting} de rotas, uma vez que é necess�
     \item name - string
     \item type - string
     \item subtype - string
-    \item connection\_info - object
+    \item connection{\_}info - object
 \end{itemize}
 
 \textbf{Formato dos objetos de saída}
@@ -130,10 +130,10 @@ Nestas ações já se pode ver \textit{nesting} de rotas, uma vez que é necess�
     \item name - string
     \item type - string
     \item subtype - string
-    \item connection\_info - object
+    \item connection{\_}info - object
 \end{itemize}
 
-O atributo \textit{name}, mais uma vez, só serve para caracterizar o dispositivo, não tendo nenhuma funcionalidade em específico. O tipo e subtipo são essenciais para comunicar com os dispositivos através do \textit{hub}, sendo os restantes parâmetros que variam de acordo com o subtipo fornecidos através do atributo variável \textit{connection\_info}.
+O atributo \textit{name}, mais uma vez, só serve para caracterizar o dispositivo, não tendo nenhuma funcionalidade em específico. O tipo e subtipo são essenciais para comunicar com os dispositivos através do \textit{hub}, sendo os restantes parâmetros que variam de acordo com o subtipo fornecidos através do atributo variável \textit{connection{\_}info}.
 
 As \textit{things} terão métodos para obter e alterar o seu estado, \textit{getStatus} e \textit{putStatus} utilizando o objeto \textit{tunnel} de uma \textit{home} para estabelecer conexão. Estes métodos serão utilizados noutro recurso para expor estes mecanismos na \textit{api}.
 
@@ -143,8 +143,8 @@ Este recurso permite obter os estados dos dispositivos, evocando os métodos do 
 
 \textbf{Ações}
 \begin{itemize}
-    \item GET /things/:thing\_id/status -> INDEX
-    \item PUT/PATCH /things/:thing\_id/status -> UPDATE
+    \item GET /things/:thing{\_}id/status -> INDEX
+    \item PUT/PATCH /things/:thing{\_}id/status -> UPDATE
 \end{itemize}
 
 O formato dos objetos depende do tipo da \textit{thing} fornecida, estes formatos podem ser inferidos através da figura \ref{fig:things-hub}, que apresenta os tipos diferentes de \textit{things} e os seus atributos.
@@ -155,7 +155,7 @@ De uma maneira semelhante ao recurso anterior, este permite aceder ao serviço d
 
 \textbf{Ações}
 \begin{itemize}
-    \item GET /homes/:home\_id/discovery -> INDEX
+    \item GET /homes/:home{\_}id/discovery -> INDEX
 \end{itemize}
 
 O formato das respostas é exatamente igual às respostas do \textit{hub}, que podem ser vistas na ultima secção.
@@ -168,8 +168,8 @@ Os cenários, como já vimos anteriormente, são um conjunto de dispositivos e o
 
 \textbf{Ações}
 \begin{itemize}
-    \item GET /homes/:home\_id/scenarios -> INDEX
-    \item POST /homes/:homes\_id/scenarios -> CREATE
+    \item GET /homes/:home{\_}id/scenarios -> INDEX
+    \item POST /homes/:homes{\_}id/scenarios -> CREATE
     \item GET /scenarios/:id -> SHOW
     \item PUT/PATCH /scenarios/:id -> UPDATE
     \item DELETE /scenarios/:id -> DESTROY
@@ -184,10 +184,10 @@ Os cenários, como já vimos anteriormente, são um conjunto de dispositivos e o
 \begin{itemize}
     \item id - number
     \item name - string
-    \item scenario\_things - array
+    \item scenario{\_}things - array
 \end{itemize}
 
-O atributo \textit{name}, tal como nos recursos anteriores, é apenas um campo identificativo útil para o utilizador nomear os seus cenários. De notar que no objeto de saída existe um atributo do tipo \textit{array} chamado de \textit{scenario\_things}, que na verdade consiste noutro recurso que vamos ver já de seguida.
+O atributo \textit{name}, tal como nos recursos anteriores, é apenas um campo identificativo útil para o utilizador nomear os seus cenários. De notar que no objeto de saída existe um atributo do tipo \textit{array} chamado de \textit{scenario{\_}things}, que na verdade consiste noutro recurso que vamos ver já de seguida.
 
 \paragraph*{Scenario Things}
 
@@ -195,17 +195,17 @@ Nos cenários é referido que os mesmos consistem num conjunto de dispositivos e
 
 \textbf{Ações}
 \begin{itemize}
-    \item GET /scenarios/:scenarios\_id/things -> INDEX
-    \item POST /scenarios/:scenarios\_id/things -> CREATE
-    \item GET /scenarios/:scenarios\_id/things/:id -> SHOW
-    \item PUT/PATCH /scenarios/:scenarios\_id/things/:id -> UPDATE
-    \item DELETE /scenarios/:scenarios\_id/things/:id -> DESTROY
+    \item GET /scenarios/:scenarios{\_}id/things -> INDEX
+    \item POST /scenarios/:scenarios{\_}id/things -> CREATE
+    \item GET /scenarios/:scenarios{\_}id/things/:id -> SHOW
+    \item PUT/PATCH /scenarios/:scenarios{\_}id/things/:id -> UPDATE
+    \item DELETE /scenarios/:scenarios{\_}id/things/:id -> DESTROY
 \end{itemize}
 
 \textbf{Formato dos objetos de entrada}
 \begin{itemize}
     \item status - object
-    \item thing\_id - number
+    \item thing{\_}id - number
 \end{itemize}
 
 \textbf{Formato dos objetos de saída}
@@ -221,7 +221,7 @@ No que toca a cenários só falta mesmo um mecanismo para aplicar o mesmo. Este 
 
 \textbf{Ações}
 \begin{itemize}
-    \item POST /scenarios/:scenarios\_id/apply -> CREATE
+    \item POST /scenarios/:scenarios{\_}id/apply -> CREATE
 \end{itemize}
 
 Este recurso não tem nenhum tipo de objeto de entrada ou saída, enviando o \textit{body} dos pedidos em branco, respondendo apenas com os \textit{status codes} apropriados.
@@ -240,7 +240,79 @@ Para definir a expressão temporal irão ser utilizadas expressões \textit{cron
 
 As expressões \textit{cron} indicam portanto intervalos de tempo podendo escolher os dias da semana e do mês onde as mesmas correm assim como os minutos e horas a que as mesmas devem correr. Recorrendo ao comando \textit{man} \footnote{\url{https://linux.die.net/man/1/crontab}} de sistemas UNIX podemos saber mais sobre o \textit{crontab}, o \textit{scheduler} de tarefas destes sistemas, que usam estas tais expressões para definir os intervalos a que as tarefas devem ser executadas.
 
+\textbf{Ações}
+\begin{itemize}
+    \item GET /homes/:home{\_}id/tasks/timed -> INDEX
+    \item POST /homes/:homes{\_}id/tasks/timed -> CREATE
+    \item GET /tasks/timed/:id -> SHOW
+    \item PUT/PATCH /tasks/timed/:id -> UPDATE
+    \item DELETE /tasks/timed/:id -> DESTROY
+\end{itemize}
+
+\textbf{Formato dos objetos de entrada}
+\begin{itemize}
+    \item id - number
+    \item cron - string
+    \item thing{\_}id - number 
+    \item status{\_}to{\_}apply - object
+    \item scenario{\_}id - number
+\end{itemize}
+
+\textbf{Formato dos objetos de saída}
+\begin{itemize}
+    \item id - number
+    \item cron - string
+    \item next{\_}run - string
+    \item thing - object
+    \item status{\_}to{\_}apply - object
+    \item scenario - object
+\end{itemize}
+
+Os objetos pertencentes a este recurso podem ativar um cenário ou uma única \textit{thing}, e não ambos ao mesmo tempo, portanto não se pode fornecer um \textit{scenario{\_}id} ao mesmo tempo que se fornece um \textit{thing{\_}id}. Assim temos dois tipos de objetos de entrada, uns com o ID do cenário a aplicar, e outros com um ID de um dispositivo mais o respetivo estado a aplicar, \textit{status{\_}to{\_}apply}. O atributo \textit{cron} é uma expressão temporal como já vimos em cima que define quando a tarefa vai ser aplicada.
+
+Nos objetos de saída temos ainda mais um atributo bastante útil, chamado de \textit{next{\_}run}, que contém a data da próxima execução desta tarefa.
+
 \paragraph*{Triggered Tasks}
 
-Já possuimos tarefas encadeadas à base de tempo, faltando o outro tipo que são ativadas com base no valor de um certo dispositivo. Nestes cenários de IoT aplicados no espaço casa, é muito comum os utilizadores quererem que certos comportamentos sejam programados de acordo com certas mudanças no ambiente, por exemplo, um cenário comum é ligar luzes utilizando sensores de movimento, o que é possível fazer no nosso caso porque possuímos o tipo base para cada um deste dispositivos.
+Já possuímos tarefas encadeadas à base de tempo, faltando o outro tipo que são ativadas com base no valor de um certo dispositivo. Nestes cenários de IoT aplicados no espaço casa, é muito comum os utilizadores quererem que certos comportamentos sejam programados de acordo com certas mudanças no ambiente, por exemplo, um cenário comum é ligar luzes utilizando sensores de movimento, o que é possível fazer no nosso caso porque possuímos o tipo base para cada um deste dispositivos.
+
+Portanto para alcançar esta funcionalidade foi criado este recurso, que permite aplicar uma dada tarefa com base no valor do estado de um outro dispositivo. Para isso, o utilizador tem que escolher um dispositivo a monitorizar e o estado que desencadeie a execução da tarefa. Internamente a aplicação vai fazendo uma comparação lógica com o estado do dispositivo fornecido com o estado atual do mesmo, e quando essa comparação tiver um valor verdadeiro a tarefa é aplicada.
+
+Tal como as tarefas temporizadas, este novo tipo também segue as mesmas regras quanto a escolha de um cenário ou um dispositivo como alvo de ativação.
+
+\textbf{Ações}
+\begin{itemize}
+    \item GET /homes/:home{\_}id/tasks/triggered -> INDEX
+    \item POST /homes/:homes{\_}id/tasks/triggered -> CREATE
+    \item GET /tasks/triggered/:id -> SHOW
+    \item PUT/PATCH /tasks/triggered/:id -> UPDATE
+    \item DELETE /tasks/triggered/:id -> DESTROY
+\end{itemize}
+
+\textbf{Formato dos objetos de entrada}
+\begin{itemize}
+    \item id - number
+    \item thing{\_}to{\_}compare{\_}id - number
+    \item status{\_}to{\_}compare - object
+    \item comparator - string
+    \item thing{\_}id - number 
+    \item status{\_}to{\_}apply - object
+    \item scenario{\_}id - number
+\end{itemize}
+
+\textbf{Formato dos objetos de saída}
+\begin{itemize}
+    \item id - number
+    \item thing{\_}to{\_}compare - object
+    \item status{\_}to{\_}compare - object
+    \item comparator - string
+    \item next{\_}run - string
+    \item thing - object
+    \item status{\_}to{\_}apply - object
+    \item scenario - object
+\end{itemize}
+
+Os objetos deste recurso possuem todos um \textit{thing{\_}to{\_}compare{\_}id}, que indica o dispositivo que queremos monitorizar, um \textit{status{\_}to{\_}compare{\_}id}, que indica o estado que queremos utilizar na comparação com o dispositivo monitorizado, e por fim, um \textit{comparator}, um operador lógico que deve ser utilizado na comparação entre o dispositivo monitorizado e o seu estado atual com o \textit{status{\_}to{\_}compare} fornecido neste objeto.
+
+Além destes atributos, este tipo de tarefas também contêm os alvos de ativação como as tarefas temporizadas, ou seja, ou um cenário ou um dispositivo com um estado a aplicar.
 

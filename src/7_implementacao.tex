@@ -38,17 +38,67 @@ Também se utilizou a biblioteca \textit{coap-router} \footnote{\url{https://git
 
 \section{Detalhes}
 
-Nesta secção irão ser detalhados alguns aspetos de uma importância acrescida, como o mecanismo de \textit{tunneling} que efetua a ligação entre vários \textit{hubs} e a \textit{api}, assim como elementos de meta-programação que permitem o crescimento do sistema em termos de dispositivos suportados, reduzindo o tempo de implementação e a manutenibilidade destes componentes.
+Nesta secção irão ser detalhados alguns aspetos de uma importância acrescida, como o mecanismo de \textit{tunneling} que efetua a ligação entre vários \textit{hubs} e a \textit{api}, assim como elementos de meta-programação que permitem o crescimento do sistema em termos de dispositivos suportados, reduzindo o tempo de implementação e a manutenibilidade destes componentes. Também alguns aspetos de segurança, muito importante em contextos de IoT, vão ser explicados em mais detalhe.
 
-\subsubsection{Tunneling}
+\subsection{Tunneling}
 
-falar do ngrok e como é utilizado e as suas vantagens
+Como já foi referido várias vezes durante esta dissertação, a comunicação entre o \textit{hub} e a \textit{api} iria ser feita através de um qualquer mecanismo de \textit{tunneling}, de modo a evitar tecnologias como encaminhamento de portas ou \textit{UPNP}, que têm processos de configuração complicados e algumas vulnerabilidades a nível de segurança.
+
+Portanto, como tecnologia de \textit{tunneling} decidiu-se utilizar o \textit{ngrok} \footnote{\url{https://ngrok.com/}}, um software que permite expor serviços web locais, mesmo por de trás de \textit{firewalls} e NATs, disponibilizando este serviço num URL de acesso público. O \textit{ngrok} apesar de ser um software orientado a programadores, que desejam expor as suas aplicações web locais sem recorrer a \textit{port forwarding} para efeitos de demonstração, demonstrou ser uma das melhores soluções, pelo nesta fase do desenvolvimento.
+
+O \textit{ngrok} irá funcionar como um processo de background, que é executado sempre que o \textit{hub} é inicializado, expondo a porta 4567 num URL gerado automaticamente.
+
+\begin{verbatim}
+    ngrok http 4567
+
+    https://370ef754.ngrok.io
+\end{verbatim}
+
+De notar que é gerado um URL cujo acesso pode ser feito utilizando o protocolo HTTPS, que assegura a encriptação dos dados que circulam neste túnel. Este URL deve ser guardado no recurso \textit{Home} presente na \textit{api} do \textit{middleware}, no campo \textit{tunnel}, assim, o \textit{middleware} já consegue aceder à API exposta pelo \textit{hub}.
+
+Neste preciso caso, o \textit{hub} possui antes um ficheiro de configuração com o túnel pré-definido
+
+\begin{verbatim}
+    web_addr: 0.0.0.0:4040
+    region: eu
+    tunnels:
+      homewatch-hub:
+        proto: http
+        addr: 4567
+\end{verbatim}
+
+Este ficheiro define o endereço base da API do \textit{ngrok}, utilizada num mecanismo que vamos explorar já de seguida, a região do túnel, que pode ser na Europa ou nos Estados Unidos, e por fim, o túnel \textit{homewatch-hub}, expondo a porta 4567 que utiliza o protocolo HTTP.
+
+A própria API do \textit{ngrok} é utilizada pelo \textit{hub} para fornecer o URL do túnel às aplicações clientes, para estas poderem criar o recurso \textit{Home} na \textit{api} do \textit{middleware} fornecendo o túnel do seu \textit{hub}.
+
+\begin{verbatim}
+    http://homewatch-hub:4567/tunnel
+
+    {
+        "url" : "https://a10d2075.eu.ngrok.io"
+    }
+\end{verbatim}
+
+Internamente o \textit{hub} efetua um pedido à API do \textit{ngrok} e extrai o URL do túnel, devolvendo-o no típico formato JSON. As aplicações podem sempre efetuar pedidos para aquele URL, uma vez que os \textit{routers} os utilizadores possuem em casa têm na sua grande maioria um próprio servidor DNS, que resolve IPs para os \textit{hostnames} das máquinas presentes na rede que adquiriram o seu IP via DHCP, e como o \textit{hostname} de todos os \textit{hubs} é \textit{homewatch-hub}, este processo torna-se perfeitamente fazível.
+
+Apesar de todas as mais valias e a facilidade de operação deste mecanismo, quer ao nível do utilizado quer ao nível do programador, esta abordagem também possui alguns contratempos.
+
+O primeiro contratempo encontrado logo antes de se montar o sistema à volta desta tecnologia foi a geração automática do URL, que obriga os utilizadores a reconfigurarem os dados da sua casa, na aplicação que acede ao \textit{middleware}, sempre que o \textit{hub} reinicia (regenerando assim o URL). A solução parcial para este problema foi o desenvolvimento do mecanismo de deteção à base dos servidores de DNS locais (dos \textit{routers} do utilizador) e da API do \textit{ngrok}, que se traduz no clique de um botão na aplicação para detetar e atualizar o túnel de uma casa. A outra solução não explorada nesta dissertação era a utilização do \textit{ngrok link}, uma versão do \textit{ngrok} orientada à infraestrutura, que oferece os seguintes benefícios:
+\begin{itemize}
+    \item Gestão de túneis \textit{ngrok} em grande escala
+    \item Reserva de endereços, basicamente garantindo a cada túnel um endereço único que nunca muda
+    \item Encriptação avançada com \textit{tokens} e credenciais diferentes para cada túnel
+    \item Utilização de HTTP/2 que oferece ganhos de performance consideráveis face ao HTTP
+    \item IP \textit{whitelisting}, que permite garantir o acesso exclusivo apenas a certos IPs (neste caso apenas o IP da rede local do utilizador e o IP do servidor da \textit{api} eram \textit{whitelisted})
+\end{itemize}
+
+Todas estas vantagens eram oferecidas a partir de uma API poderosa exclusiva aos assinantes do \textit{ngrok link}. Esta tecnologia não foi utilizada uma vez que era orientada a negócios e a infraestruturas, não conseguindo ter acesso à mesma, no entanto, a escolha recaiu na versão base do \textit{ngrok} que permite demonstrar o funcionamento desta arquitetura e num cenário perfeito seria utilizado o \textit{ngrok link}.
 
 \subsection{Meta-Programação}
 
 falar dos elementos de meta programação no hub (reflections e autoloading das Thing classes)
 
-falar também das comparações e definições em runtime nas triggered tasks
+falar também das comparações e definições em runtime nas triggered taskss
 
 \subsubsection{Hub}
 

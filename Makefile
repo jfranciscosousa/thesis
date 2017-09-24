@@ -23,6 +23,9 @@ open: $(NAME).pdf
 open:
 	evince $(NAME).pdf
 
+watch:
+	when-changed src $(NAME).tex -c $(MAKE)
+
 %.pdf: %.tex FORCE_MAKE
 	$(call pretty_print,$(BLUE),make,compiling...)
 	$(call compile_tex,$(basename $<))

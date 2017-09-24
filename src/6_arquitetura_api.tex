@@ -1,13 +1,13 @@
 \subsection{Api}
 
-A \textit{api} é a parte central do projeto, contendo toda a lógica e funcionalidades para responder aos problemas encontrados. Como já foi explicado anteriormente, a \textit{api} irá adotar uma arquitetura \textit{REST}, utilizando HTTP como protocolo de transporte. Nesta secção será delineada a arquitetura interna da \textit{api} e depois os vários \textit{endpoints} e métodos da aplicação.
+A \textit{api} é a parte central do projeto, contendo toda a lógica e funcionalidades para responder aos problemas encontrados. Como já foi explicado anteriormente, a \textit{api} irá adotar uma arquitetura \textit{REST}, utilizando HTTP como protocolo de transporte. Nesta secção será delineada a arquitetura interna da \textit{api}, e, posteriormente, os vários \textit{endpoints} e métodos da aplicação.
 
 Como arquitetura deverá ser adotado o modelo MVC, que efetua a correta separação entre as três camadas essenciais de uma aplicação \textit{enterprise}, dados, lógica de negócio e apresentação, que mapeia para os conceitos, \textit{model}, \textit{controller}, \textit{view}. Este padrão é bastante predominante em aplicações web, inclusive APIs REST, porque torna muito mais manutenível e legível, um sistema complexo com vários tipos de modelos e operações. Além desta abordagem será utilizada uma \textit{service layer}, para efetuar operações complicadas de mais para aparecer num \textit{controller}.
 
-Neste cenário, os \textit{models} são apenas \textit{placeholders} para os dados vindos da base de dados, sendo utilizado qualquer tipo de camada ORM para efetuar o mapeamento de dados. Os \textit{controllers} têm como objetivo receber os parâmetros dos pedidos à API, efetuando operações necessárias na base de dados, através da camada ORM, recorrendo a \textit{service objects} quando a lógica se torna complexa demais.
+Neste cenário os \textit{models} são apenas \textit{placeholders} para os dados vindos da base de dados, sendo utilizado qualquer tipo de camada ORM para efetuar o mapeamento de dados. Os \textit{controllers} têm como objetivo receber os parâmetros dos pedidos à API, efetuando operações necessárias na base de dados, através da camada ORM, recorrendo a \textit{service objects} quando a lógica se torna complexa demais.
 
-Ao contrário do \textit{hub}, que utilizava apenas um subconjunto muito simples da arquitetura REST, esta parte do projeto já aumenta bastante de complexidade, e portanto serão detalhadas as ações REST utilizadas.
-Como é normal em \textit{designs} REST, as aplicações são divididas em recursos, como por exemplo ''utilizadores'' ou ''casas'', e cada recurso possui métodos CRUD para serem manipulados. Utilizando HTTP, os recursos são representados por URLs e são utilizados os métodos do protocolo para manipular os recursos. De seguida, uma especificação das ações REST mais comuns a sua implementação em HTTP.
+Ao contrário do \textit{hub}, que utilizava apenas um subconjunto muito simples da arquitetura REST, esta parte do projeto apresenta um nível de complexidade bastante superior, no que toca aos elementos RESTful, e como tal, serão detalhadas as ações REST utilizadas.
+Como é normal em \textit{designs} REST, as aplicações são divididas em recursos, como por exemplo ''utilizadores'' ou ''casas'', e cada recurso possui métodos CRUD para serem manipulados. Utilizando HTTP, os recursos são representados por URLs e são utilizados os métodos do protocolo para manipular os recursos. De seguida, uma especificação das ações REST mais comuns e a sua implementação utilizando o protocolo HTTP.
 
 \begin{table}[H]
 \centering
@@ -23,7 +23,7 @@ Como é normal em \textit{designs} REST, as aplicações são divididas em recur
   \caption{Ações REST}
 \end{table}
 
-Portanto, esta aplicação é composta por recursos, cada recurso sendo manipulado por um \textit{controller}, fazendo alterações no respetivo \textit{model}, sendo as suas alterações representadas pela sua \textit{view}, que neste caso são simples classes de utilidade que serializam objetos para JSON. Os \textit{controllers} serão compostos pelas ações da tabela acima, sendo cada ação um método no \textit{controller}, depois cada método será mapeado para uma rota, que é uma combinação de um URL com um método HTTP, semelhante ao que vimos na tabela 2.
+Portanto, esta aplicação é composta por recursos, sendo cada um deles manipulado por um \textit{controller}, fazendo alterações no respetivo \textit{model}, sendo as suas alterações representadas pela sua \textit{view}, que neste caso são simples classes de utilidade que serializam objetos para JSON. Os \textit{controllers} serão compostos pelas ações da tabela acima, sendo cada ação um método no \textit{controller}. Posto isto, cada método será mapeado para uma rota, que é uma combinação de um URL com um método HTTP, semelhante ao que vimos na tabela 2.
 
 
 % FAZER UM DIAGRAMA AQUI SFF
@@ -72,7 +72,7 @@ Este recurso é um pouco diferente do habitual, sendo um recurso singular, ou se
 
 \paragraph*{Homes}
 
-Este recurso representam as diversas casas dos utilizadores, contendo informação para interagir com os dispositivos dentro da casa do utilizador através dum \textit{hub}. Essencialmente, uma casa é o objeto representativo do \textit{hub}, sendo o interface de comunicação entre o utilizador e os seus dispositivos. De notar a existência de um \textit{id} no objeto de saída, que é dado ao objeto depois da sua gravação na base de dados.
+Este recurso representa as diversas casas dos utilizadores, contendo informação para interagir com os dispositivos dentro da casa do utilizador através dum \textit{hub}. Essencialmente, uma casa é o objeto representativo do \textit{hub}, sendo o interface de comunicação entre o utilizador e os seus dispositivos. De notar a existência de um \textit{id} no objeto de saída, que é dado ao objeto depois da sua gravação na base de dados.
 
 \textbf{Ações}
 \begin{itemize}
@@ -99,11 +99,11 @@ Este recurso representam as diversas casas dos utilizadores, contendo informaç�
     \item ip{\_}address - string
 \end{itemize}
 
-Os atributos \textit{name} e \textit{location} são apenas utilidades para o próprio utilizador categorizar a sua casa na aplicação, já o \textit{tunnel} é um objeto que contém informação para conectar com o \textit{hub} na casa do utilizador. Internamente, a \textit{api} atribui um endereço IP á casa, o mesmo IP proveniente do pedido HTTP. Na próxima secção, onde irão ser detalhados os aspetos da implementação mais importantes, irá ser delineado a tecnologia utilizada na tunelização entre o \textit{hub} e a \textit{api}.
+Os atributos \textit{name} e \textit{location} são apenas utilidades para o próprio utilizador categorizar a sua casa na aplicação, já o \textit{tunnel} é um objeto que contém informação para conectar com o \textit{hub} na casa do utilizador. Internamente, a \textit{api} atribui um endereço IP à casa, o mesmo IP proveniente do pedido HTTP. Na próxima secção, onde irão ser detalhados os aspetos da implementação mais importantes, irá ser delineado a tecnologia utilizada no mecanismo de \textit{tunneling} entre o \textit{hub} e a \textit{api}.
 
 \paragraph*{Things}
 
-Também conhecido como ''coisas'', é um termo utilizado para definir os dispositivos dos utilizadores, presentes numa das suas casas. Cada \textit{thing} possui as mesmas informações que são enviadas para os \textit{ThingServices} no \textit{hub}, ou seja, parâmetros como o \textit{subtype}, \textit{address} entre outros são todos armazenados neste recurso. Os dispositivos pertencem a uma casa e portanto a um utilizador (via esta ultima relação).
+Também conhecido como ''coisas'', é um termo utilizado para definir os dispositivos dos utilizadores presentes numa das suas casas. Cada \textit{thing} possui as mesmas informações que são enviadas para os \textit{ThingServices} no \textit{hub}, ou seja, parâmetros como o \textit{subtype}, \textit{address} entre outros sendo todos armazenados neste recurso. Os dispositivos pertencem a uma casa e portanto a um utilizador (via esta ultima relação).
 
 \textbf{Ações}
 \begin{itemize}
@@ -147,7 +147,7 @@ Este recurso permite obter os estados dos dispositivos, evocando os métodos do 
     \item PUT/PATCH /things/:thing{\_}id/status -> UPDATE
 \end{itemize}
 
-O formato dos objetos depende do tipo da \textit{thing} fornecida, estes formatos podem ser inferidos através da figura \ref{fig:things-hub}, que apresenta os tipos diferentes de \textit{things} e os seus atributos.
+O formato dos objetos depende do tipo da \textit{thing} fornecida, sendo que  podem ser inferidos através da figura \ref{fig:things-hub}, que apresenta os tipos diferentes de \textit{things} e os seus atributos.
 
 \paragraph*{Things Discovery}
 
@@ -158,13 +158,13 @@ De uma maneira semelhante ao recurso anterior, este permite aceder ao serviço d
     \item GET /homes/:home{\_}id/discovery -> INDEX
 \end{itemize}
 
-O formato das respostas é exatamente igual às respostas do \textit{hub}, que podem ser vistas na ultima secção.
+O formato das respostas é exatamente igual às respostas do \textit{hub}, que podem ser vistas na última secção.
 
 %SENARIOS
 
 \paragraph*{Scenarios}
 
-Os cenários, como já vimos anteriormente, são um conjunto de dispositivos e os respetivos estados que devem ser lhes aplicado. Essencialmente este recurso é o ponto de partida para a funcionalidade dos cenários, que ainda é composta por mais outros dois recursos. Cada cenário pertence a uma casa.
+Os cenários, como já vimos anteriormente, são um conjunto de dispositivos e os respetivos estados que lhes devem ser aplicados. Essencialmente este recurso é o ponto de partida para a funcionalidade dos cenários, que ainda é composta por mais outros dois recursos. Cada cenário pertence a uma casa.
 
 \textbf{Ações}
 \begin{itemize}
@@ -217,7 +217,7 @@ Nos cenários é referido que os mesmos consistem num conjunto de dispositivos e
 
 \paragraph*{Scenario Applier}
 
-No que toca a cenários só falta mesmo um mecanismo para aplicar o mesmo. Este exemplo também demonstra bem a diferença entre REST e outras abordagens como SOAP. Em SOAP provavelmente teríamos um método remoto \textit{applyScenario} que seria invocado pelo cliente, no entanto, em REST apenas temos recursos e métodos os métodos base do HTTP, e portanto criámos um recurso chamado de \textit{Scenario Applier}, chamando o método POST no mesmo (porque se está a invocar alterações no servidor, portanto é boa prática usar POST). Este é um dos poucos recursos sem modelos ou persistência de dados associados.
+No que toca a cenários apenas falta um mecanismo para aplicar o mesmo. Este exemplo também demonstra bem a diferença entre REST e outras abordagens como SOAP. Em SOAP provavelmente teríamos um método remoto \textit{applyScenario} que seria invocado pelo cliente, no entanto, em REST apenas temos recursos e métodos os métodos, que neste caso são os base do HTTP, e portanto criámos um recurso chamado de \textit{Scenario Applier}, chamando o método POST no mesmo (porque se está a invocar alterações no servidor, portanto é boa prática usar POST). Este é um dos poucos recursos sem modelos ou persistência de dados associados.
 
 \textbf{Ações}
 \begin{itemize}
@@ -253,7 +253,7 @@ As expressões \textit{cron} indicam portanto intervalos de tempo podendo escolh
 \begin{itemize}
     \item id - number
     \item cron - string
-    \item thing{\_}id - number 
+    \item thing{\_}id - number
     \item status{\_}to{\_}apply - object
     \item scenario{\_}id - number
 \end{itemize}
@@ -268,7 +268,7 @@ As expressões \textit{cron} indicam portanto intervalos de tempo podendo escolh
     \item scenario - object
 \end{itemize}
 
-Os objetos pertencentes a este recurso podem ativar um cenário ou uma única \textit{thing}, e não ambos ao mesmo tempo, portanto não se pode fornecer um \textit{scenario{\_}id} ao mesmo tempo que se fornece um \textit{thing{\_}id}. Assim temos dois tipos de objetos de entrada, uns com o ID do cenário a aplicar, e outros com um ID de um dispositivo mais o respetivo estado a aplicar, \textit{status{\_}to{\_}apply}. O atributo \textit{cron} é uma expressão temporal como já vimos em cima que define quando a tarefa vai ser aplicada.
+Os objetos pertencentes a este recurso podem ativar um cenário ou uma única \textit{thing}, e não ambos ao mesmo tempo, portanto não se pode fornecer um \textit{scenario{\_}id} ao mesmo tempo que se fornece um \textit{thing{\_}id}. Assim, temos dois tipos de objetos de entrada, uns com o ID do cenário a aplicar, e outros com um ID de um dispositivo mais o respetivo estado a aplicar, \textit{status{\_}to{\_}apply}. O atributo \textit{cron} é uma expressão temporal como já vimos em cima que define quando a tarefa vai ser aplicada.
 
 Nos objetos de saída temos ainda mais um atributo bastante útil, chamado de \textit{next{\_}run}, que contém a data da próxima execução desta tarefa.
 
@@ -276,9 +276,9 @@ Nos objetos de saída temos ainda mais um atributo bastante útil, chamado de \t
 
 Já possuímos tarefas encadeadas à base de tempo, faltando o outro tipo que são ativadas com base no valor de um certo dispositivo. Nestes cenários de IoT aplicados no espaço casa, é muito comum os utilizadores quererem que certos comportamentos sejam programados de acordo com certas mudanças no ambiente, por exemplo, um cenário comum é ligar luzes utilizando sensores de movimento, o que é possível fazer no nosso caso porque possuímos o tipo base para cada um deste dispositivos.
 
-Portanto para alcançar esta funcionalidade foi criado este recurso, que permite aplicar uma dada tarefa com base no valor do estado de um outro dispositivo. Para isso, o utilizador tem que escolher um dispositivo a monitorizar e o estado que desencadeie a execução da tarefa. Internamente a aplicação vai fazendo uma comparação lógica com o estado do dispositivo fornecido com o estado atual do mesmo, e quando essa comparação tiver um valor verdadeiro a tarefa é aplicada.
+Posto isto, para alcançar esta funcionalidade foi criado este recurso, que permite aplicar uma dada tarefa com base no valor do estado de um outro dispositivo. Para isso, o utilizador tem que escolher um dispositivo a monitorizar e o estado que desencadeie a execução da tarefa. Internamente a aplicação vai fazendo uma comparação lógica com o estado do dispositivo fornecido com o estado atual do mesmo, e quando essa comparação tiver um valor verdadeiro a tarefa é aplicada.
 
-Tal como as tarefas temporizadas, este novo tipo também segue as mesmas regras quanto a escolha de um cenário ou um dispositivo como alvo de ativação.
+Tal como as tarefas temporizadas, este novo tipo também segue as mesmas regras quanto à escolha de um cenário ou um dispositivo como alvo de ativação.
 
 \textbf{Ações}
 \begin{itemize}
@@ -295,7 +295,7 @@ Tal como as tarefas temporizadas, este novo tipo também segue as mesmas regras 
     \item thing{\_}to{\_}compare{\_}id - number
     \item status{\_}to{\_}compare - object
     \item comparator - string
-    \item thing{\_}id - number 
+    \item thing{\_}id - number
     \item status{\_}to{\_}apply - object
     \item scenario{\_}id - number
 \end{itemize}
@@ -314,5 +314,5 @@ Tal como as tarefas temporizadas, este novo tipo também segue as mesmas regras 
 
 Os objetos deste recurso possuem todos um \textit{thing{\_}to{\_}compare{\_}id}, que indica o dispositivo que queremos monitorizar, um \textit{status{\_}to{\_}compare{\_}id}, que indica o estado que queremos utilizar na comparação com o dispositivo monitorizado, e por fim, um \textit{comparator}, um operador lógico que deve ser utilizado na comparação entre o dispositivo monitorizado e o seu estado atual com o \textit{status{\_}to{\_}compare} fornecido neste objeto.
 
-Além destes atributos, este tipo de tarefas também contêm os alvos de ativação como as tarefas temporizadas, ou seja, ou um cenário ou um dispositivo com um estado a aplicar.
+Além destes atributos, este tipo de tarefas também contêm os alvos de ativação como as tarefas temporizadas, ou seja, ou um cenário, ou um dispositivo com um estado a aplicar.
 

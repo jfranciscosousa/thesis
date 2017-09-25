@@ -96,10 +96,66 @@ Todas estas vantagens eram oferecidas a partir de uma API poderosa exclusiva aos
 
 \subsection{Meta-Programação}
 
-falar dos elementos de meta programação no hub (reflections e autoloading das Thing classes)
+Devido ao tamanho do projeto e à extensibilidade do mesmo, mecanismos de meta-programação tornam se um elemento muito atrativo para a redução do código escrito, conseguindo-se implementar muitas funcionalidades e mantendo todo o projeto conciso e manutenível.
 
-falar também das comparações e definições em runtime nas triggered taskss
+Meta-programação consiste então nas muitas maneiras que um programa consegue manipular o seu próprio funcionamento durante o tempo de execução. Em muitas linguagens orientadas a objetos, como o Java por exemplo, existe um mecanismo muito usado de meta-programação, chamado de reflexões, que permite a uma aplicação obter informações sobre as classes e elementos que a compõem, por exemplo, obter uma lista com o nome dos métodos que uma classe define, ou obter todas as classes que implementam um dado interface ou que estendem uma dada classe.
+
+Nesta secção iremos então observar como vários elementos de meta-programação permitiram simplificar longos processos de escrita de código em pequenos pedaços de código extensível recorrendo a bibliotecas de meta-programação oferecidas pelas linguagens.
 
 \subsubsection{Hub}
+
+Utilizando a framework web \textit{Spark}, conseguimos expor os nossos \textit{ThingServices} via uma API HTTP, como é possível ver no seguinte exemplo:
+
+\begin{minted}{java}
+ThingServiceFactory<Light> thingServiceFactory = new LightServiceFactory();
+ThingController<Light> controller = new ThingController(
+    thingServiceFactory,
+    Light.class);
+
+Spark.get("/devices/lights", controller::get);
+Spark.put("/devices/lights", controller::put);
+\end{minted}
+
+Este exemplo faz uso da tal injeção de dependências explicada durante a fase da arquitetura, conseguindo assim ter apenas um controlador que faz a gestão de todos o tipos de dispositivos. Depois, são criadas duas rotas, uma utilizando o método GET e PUT, que se associam aos respetivos métodos no controlador. Aquela notação faz parte da API do Java 8, que permite passar métodos por referência.
+
+Internamente, os métodos \textit{get} e \textit{put} recebem dois objetos da \textit{framework} utilizada, do tipo \textit{Request} e \textit{Response}, que têm todos os elementos do pedido HTTP proveniente do cliente assim como o objeto que representa a resposta a ser enviada. Com estes objetos é possível manipular cabeçalhos, \textit{query parameters}, entre outros.
+
+No entanto, apesar dos mecanismos arquiteturais utilizados para simplificar o processo de adição de tipos e subtipos de dispositivos, ainda há um problema, sempre que é criado um novo tipo de dispositivo é preciso criar estas rotas manualmente, estando a aumentar a complexidade do código com \textit{boilerplate code}, código repetido sem grande significado.
+
+Para resolver este pequeno problema decidiu-se recorrer à biblioteca de \textit{reflections} do Java, que permite inferir durante o \textit{runtime}, a lista de classes que implementa o interface \textit{Thing}. Isto é bastante útil porque podemos utilizar os métodos definidos no interface, \textit{getFactory} e \textit{getStringRepresentation}, para automaticamente criar todas as rotas necessárias para o funcionamento do \textit{hub}.
+
+\newpage
+
+Primeiro foi criada uma classe auxiliar com um método \textit{static} para obter todas as \textit{Things} do projeto.
+
+\begin{minted}{java}
+class ClassDiscoverer {
+  public static Set<Class<? extends Thing>> getThings() {
+    Reflections reflections = new Reflections("homewatch.things");
+    return reflections.getSubTypesOf(Thing.class);
+  }
+}
+\end{minted}
+
+Este método obtêm todas as classes que implementam o interface \textit{Thing} e que estejam presentes no pacote no pacote \textit{homewatch.things}, esta pesquisa por pacote permite reduzir o tempo de execução da mesma.
+
+Depois utilizamos este método para criar as rotas correspondentes aos 5 tipos de dispositivos que se implementaram.
+
+\begin{minted}{java}
+private static void deviceControllers() {
+  ClassDiscoverer.getThings().forEach(klass -> {
+    try {
+      Thing t = klass.newInstance();
+      ThingServiceFactory thingServiceFactory = t.getFactory();
+      ThingController controller = new ThingController(thingServiceFactory, klass);
+
+      Spark.get("/devices/" + t.getStringRepresentation(), controller::get);
+      Spark.put("/devices/" + t.getStringRepresentation(), controller::put);
+    } catch (InstantiationException | IllegalAccessException e) {
+      LoggerUtils.logException(e);
+    }
+  });
+}
+\end{minted}
 
 \subsubsection{Api}

@@ -36,6 +36,6 @@ clean:
 	@echo ""
 	@cat ./.make/art/maid.ascii
 	@echo "\n"
-	rm -rf $(NAME).{acn,glo,ist,run.xml,upa,upb,bcf,aux,bbl,blg,lof,log,lot,synctex.gz,toc,fls,fdb_latexmk} _minted-main
+	rm -rf $(NAME).{acn,glo,ist,run.xml,upa,upb,bcf,aux,bbl,blg,lof,log,lot,synctex.gz,toc,fls,fdb_latexmk,'synctex.gz(busy)'} _minted-main
 	@echo ""
 	$(call pretty_print,$(GREEN),make,✓ done!)

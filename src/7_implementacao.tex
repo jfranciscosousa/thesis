@@ -85,11 +85,11 @@ Apesar de todas as mais valias e a facilidade de operação deste mecanismo, que
 
 O primeiro contratempo encontrado logo antes de se montar o sistema à volta desta tecnologia foi a geração automática do URL, que obriga os utilizadores a reconfigurarem os dados da sua casa, na aplicação que acede ao \textit{middleware}, sempre que o \textit{hub} reinicia (regenerando assim o URL). A solução parcial para este problema foi o desenvolvimento do mecanismo de deteção à base dos servidores de DNS locais (dos \textit{routers} do utilizador) e da API do \textit{ngrok}, que se traduz no clique de um botão na aplicação para detetar e atualizar o túnel de uma casa. Apesar de ser uma boa solução, não é perfeita, havendo o inconveniente de as tarefas automatizadas não funcionarem enquanto que o URL do túnel não for atualizado.
 
-O outro problema consiste no limite de conexões HTTP imposto pelo \textit{ngrok} (20 por minuto), que põe em causa o funcionamento do \textit{polling} efetuado aos dispositivos através deste túnel no âmbito das tarefas automatizadas, uma vez que, cada \textit{triggered task} está sempre a monitorizar um dado dispositivo. A solução que resolveu este problema com sucesso foi a utilização de conexões persistentes HTTP \footnote{\url{https://www.w3.org/Protocols/rfc2616/rfc2616-sec8.html}}, que permite a reutilização de conexões HTTP, não causando a exaustão prematura das mesmas. Esta limitação também é evidente apenas no plano base (que é grátis), que foi utilizado para desenvolvimento.
+O outro problema consiste no limite de conexões HTTP imposto pelo \textit{ngrok} (20 por minuto), que põe em causa o funcionamento do \textit{polling} efetuado aos dispositivos através deste túnel no âmbito das tarefas automatizadas, uma vez que, cada \textit{triggered task} está sempre a monitorizar um dado dispositivo. A solução que resolveu este problema com sucesso foi a utilização de conexões persistentes HTTP \footnote{\textit{RFC HTTP Persistent Connections}: \url{https://www.w3.org/Protocols/rfc2616/rfc2616-sec8.html}}, que permite a reutilização de conexões HTTP, não causando a exaustão prematura das mesmas. Esta limitação também é evidente apenas no plano base (que é grátis), que foi utilizado para desenvolvimento.
 
 Por fim temos o problema de segurança, uma vez que apesar do tráfego dentro do túnel utilizar HTTPS (estando encriptado portanto), qualquer pessoa pode aceder ao túnel, caso tenha o URL de acesso, e enviar comandos para o \textit{hub}. De momento resolvemos esse problema manualmente, utilizando um sistema de tokens para autenticar o acesso à API interna do \textit{hub}, oferecendo acesso exclusivo à \textit{api}. Isto é muito importante porque o objetivo é que o \textit{hub} seja de acesso privado, apenas a \textit{api} do \textit{middleware} tem permissão para aceder ao mesmo.
 
-Num cenário ideal podia-se utilizar o \textit{ngrok link}, que oferece todos os benefícios deste software assim como outras funcionalidades que tornam a utilização desta tecnologia em massa muito mais acessível. Este plano resolve todos os problemas encontrados oferecendo ainda mecanismos avançados para a gestão em massa de túneis, que é exatamente o que acontece no nosso caso.
+Num cenário ideal podia-se utilizar o \textit{ngrok link}\footnote{\textit{ngrok link}: \url{https://ngrok.com/product/ngrok-link}}, que oferece todos os benefícios deste software assim como outras funcionalidades que tornam a utilização desta tecnologia em massa muito mais acessível. Este plano resolve todos os problemas encontrados oferecendo ainda mecanismos avançados para a gestão em massa de túneis, que é exatamente o que acontece no nosso caso.
 \begin{itemize}
     \item Gestão de túneis \textit{ngrok} em grande escala
     \item Reserva de endereços, basicamente garantindo a cada túnel um endereço único que nunca muda
@@ -162,6 +162,10 @@ private static void deviceControllers() {
 }
 \end{minted}
 
-Este método é chamado
+Este método é chamado nas classes de \textit{setup} do projeto, que tratam do processo de inicialização e configuração do pequeno servidor, e essencialmente percorre a lista de classes retornada pelo método \textit{getThings}, utilizando os dois métodos utilitários, \textit{getFactory} e \textit{getStringRepresentation} para criar as rotas de acesso aos serviços dinamicamente. Desta maneira, desde que os interfaces dos dispositivos retornem a \textit{factory} respetiva e afixando a descrição do dispositivo à rota de acesso.
+
+Exemplificando o funcionamento deste mecanismo, se tivermos um dispositivo \textit{Light} onde o método \textit{getFactory} retorna um \textit{LightServiceFactory} e onde o método \textit{getStringRepresentation} retorna \textit{''lights''}, irá ser criado um \textit{controller} utilizando um \textit{LightServiceFactory}, e depois serão criadas duas rotas, \textit{''/devices/lights''} com os métodos GET e PUT.
+
+Assim, conseguimos automaticamente instanciar todos os \textit{controllers} sem ter que repetir pedaços de código idênticos, que iriam acabar por se tornar muito numerosos com o crescimento de tipos de dispositivos.
 
 \subsubsection{Api}

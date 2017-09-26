@@ -13,6 +13,8 @@ Como já foi visto anteriormente, o \textit{hub} tem como função agregar as AP
 
 Inicialmente foram definidas classes base para os diversos tipos de \textit{things} suportadas. Estas classes representam o estado de um dispositivo, indicando, por exemplo, se uma porta está fechada ou se uma luz está ligada. Serão suportadas os 5 tipos de \textit{things} já definidas no modelo de domínio: termóstato, sensor de movimento, fechadura, luz, estação de meteorologia. As \textit{things} são classes imutáveis, ou seja, o seu conteúdo não pode ser alterado dinamicamente, servindo apenas para representar um estado.
 
+O processo de escolha nos atributos que compõem o estado dos dispositivos consiste na análise do funcionamento comum entre os diversos dispositivos no mercado, ou seja, apenas foi decidido colocar atributos que estão presentes em grande maioria dos dispositivos. Por exemplo, certas lâmpadas \textit{premium} oferecem regulação de luminosidade e cor, mas grande parte das lâmpadas no mercado não oferecem essa funcionalidade. Uma solução para isto poderia ser incluir os campos extra na mesma, não apresentado o seu valor caso não existissem, mas para o âmbito desta dissertação decidiu-se manter o estado dos dispositivos simples, para efeitos de demonstração.
+
 As \textit{things} não possuem muitas funcionalidades em comum, mas foram mesmo assim integradas num interface que possui dois métodos de utilidade. A partir de uma \textit{thing} deveremos obter a sua representação textual, por exemplo, a classe \textit{Lock} tem a representação textual \textit{lock}. Também deveremos obter a \textit{factory} que cria os serviços (definição dos mesmos mais à frente) que interagem com os dispositivos respetivos.
 
 \begin{figure}[H]

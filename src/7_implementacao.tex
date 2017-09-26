@@ -83,7 +83,13 @@ Internamente o \textit{hub} efetua um pedido à API do \textit{ngrok} e extrai o
 
 Apesar de todas as mais valias e a facilidade de operação deste mecanismo, quer ao nível do utilizado quer ao nível do programador, esta abordagem também possui alguns contratempos.
 
-O primeiro contratempo encontrado logo antes de se montar o sistema à volta desta tecnologia foi a geração automática do URL, que obriga os utilizadores a reconfigurarem os dados da sua casa, na aplicação que acede ao \textit{middleware}, sempre que o \textit{hub} reinicia (regenerando assim o URL). A solução parcial para este problema foi o desenvolvimento do mecanismo de deteção à base dos servidores de DNS locais (dos \textit{routers} do utilizador) e da API do \textit{ngrok}, que se traduz no clique de um botão na aplicação para detetar e atualizar o túnel de uma casa. A outra solução não explorada nesta dissertação era a utilização do \textit{ngrok link}, uma versão do \textit{ngrok} orientada à infraestrutura, que oferece os seguintes benefícios:
+O primeiro contratempo encontrado logo antes de se montar o sistema à volta desta tecnologia foi a geração automática do URL, que obriga os utilizadores a reconfigurarem os dados da sua casa, na aplicação que acede ao \textit{middleware}, sempre que o \textit{hub} reinicia (regenerando assim o URL). A solução parcial para este problema foi o desenvolvimento do mecanismo de deteção à base dos servidores de DNS locais (dos \textit{routers} do utilizador) e da API do \textit{ngrok}, que se traduz no clique de um botão na aplicação para detetar e atualizar o túnel de uma casa. Apesar de ser uma boa solução, não é perfeita, havendo o inconveniente de as tarefas automatizadas não funcionarem enquanto que o URL do túnel não for atualizado.
+
+O outro problema consiste no limite de conexões HTTP imposto pelo \textit{ngrok} (20 por minuto), que põe em causa o funcionamento do \textit{polling} efetuado aos dispositivos através deste túnel no âmbito das tarefas automatizadas, uma vez que, cada \textit{triggered task} está sempre a monitorizar um dado dispositivo. A solução que resolveu este problema com sucesso foi a utilização de conexões persistentes HTTP \footnote{\url{https://www.w3.org/Protocols/rfc2616/rfc2616-sec8.html}}, que permite a reutilização de conexões HTTP, não causando a exaustão prematura das mesmas. Esta limitação também é evidente apenas no plano base (que é grátis), que foi utilizado para desenvolvimento.
+
+Por fim temos o problema de segurança, uma vez que apesar do tráfego dentro do túnel utilizar HTTPS (estando encriptado portanto), qualquer pessoa pode aceder ao túnel, caso tenha o URL de acesso, e enviar comandos para o \textit{hub}. De momento resolvemos esse problema manualmente, utilizando um sistema de tokens para autenticar o acesso à API interna do \textit{hub}, oferecendo acesso exclusivo à \textit{api}. Isto é muito importante porque o objetivo é que o \textit{hub} seja de acesso privado, apenas a \textit{api} do \textit{middleware} tem permissão para aceder ao mesmo.
+
+Num cenário ideal podia-se utilizar o \textit{ngrok link}, que oferece todos os benefícios deste software assim como outras funcionalidades que tornam a utilização desta tecnologia em massa muito mais acessível. Este plano resolve todos os problemas encontrados oferecendo ainda mecanismos avançados para a gestão em massa de túneis, que é exatamente o que acontece no nosso caso.
 \begin{itemize}
     \item Gestão de túneis \textit{ngrok} em grande escala
     \item Reserva de endereços, basicamente garantindo a cada túnel um endereço único que nunca muda
@@ -124,8 +130,6 @@ No entanto, apesar dos mecanismos arquiteturais utilizados para simplificar o pr
 
 Para resolver este pequeno problema decidiu-se recorrer à biblioteca de \textit{reflections} do Java, que permite inferir durante o \textit{runtime}, a lista de classes que implementa o interface \textit{Thing}. Isto é bastante útil porque podemos utilizar os métodos definidos no interface, \textit{getFactory} e \textit{getStringRepresentation}, para automaticamente criar todas as rotas necessárias para o funcionamento do \textit{hub}.
 
-\newpage
-
 Primeiro foi criada uma classe auxiliar com um método \textit{static} para obter todas as \textit{Things} do projeto.
 
 \begin{minted}{java}
@@ -157,5 +161,7 @@ private static void deviceControllers() {
   });
 }
 \end{minted}
+
+Este método é chamado
 
 \subsubsection{Api}

@@ -1,0 +1,243 @@
+\subsection{Api}
+
+No que toca à API temos 3 detalhes importantes que vale a pena referir, os mecanismos de \textit{tunneling} para comunicar com o \textit{hub}, os elementos de metaprogramação utilizados nas \textit{triggered tasks}, e por fim, os mecanismos de \textit{background jobs} utilizados para lidar com as tarefas e outros aspetos.
+
+\subsubsection{Tunneling}
+
+Como já foi referido várias vezes durante esta dissertação, a comunicação entre o \textit{hub} e a \textit{api} iria ser feita através de um qualquer mecanismo de \textit{tunneling}, de modo a evitar tecnologias como encaminhamento de portas ou \textit{UPNP}, que têm processos de configuração complicados e algumas vulnerabilidades a nível de segurança.
+
+Portanto, como tecnologia de \textit{tunneling} decidiu-se utilizar o \textit{ngrok} \footnote{\url{https://ngrok.com/}}, um software que permite expor serviços web locais, mesmo por de trás de \textit{firewalls} e NATs, disponibilizando este serviço num URL de acesso público. O \textit{ngrok} apesar de ser um software orientado a programadores, que desejam expor as suas aplicações web locais sem recorrer a \textit{port forwarding} para efeitos de demonstração, demonstrou ser uma das melhores soluções, pelo nesta fase do desenvolvimento.
+
+O \textit{ngrok} irá funcionar como um processo de background, que é executado sempre que o \textit{hub} é inicializado, expondo a porta 4567 num URL gerado automaticamente.
+
+\begin{verbatim}
+    ngrok http 4567
+
+    https://370ef754.ngrok.io
+\end{verbatim}
+
+De notar que é gerado um URL cujo acesso pode ser feito utilizando o protocolo HTTPS, que assegura a encriptação dos dados que circulam neste túnel. Este URL deve ser guardado no recurso \textit{Home} presente na \textit{api} do \textit{middleware}, no campo \textit{tunnel}, assim, o \textit{middleware} já consegue aceder à API exposta pelo \textit{hub}.
+
+Neste preciso caso, o \textit{hub} possui antes um ficheiro de configuração com o túnel pré-definido
+
+\begin{verbatim}
+    web_addr: 0.0.0.0:4040
+    region: eu
+    tunnels:
+      homewatch-hub:
+        proto: http
+        addr: 4567
+\end{verbatim}
+
+Este ficheiro define o endereço base da API do \textit{ngrok}, utilizada num mecanismo que vamos explorar já de seguida, a região do túnel, que pode ser na Europa ou nos Estados Unidos, e por fim, o túnel \textit{homewatch-hub}, expondo a porta 4567 que utiliza o protocolo HTTP.
+
+A própria API do \textit{ngrok} é utilizada pelo \textit{hub} para fornecer o URL do túnel às aplicações clientes, para estas poderem criar o recurso \textit{Home} na \textit{api} do \textit{middleware} fornecendo o túnel do seu \textit{hub}.
+
+\begin{verbatim}
+    http://homewatch-hub:4567/tunnel
+
+    {
+        "url" : "https://a10d2075.eu.ngrok.io"
+    }
+\end{verbatim}
+
+Internamente o \textit{hub} efetua um pedido à API do \textit{ngrok} e extrai o URL do túnel, devolvendo-o no típico formato JSON. As aplicações podem sempre efetuar pedidos para aquele URL, uma vez que os \textit{routers} os utilizadores possuem em casa têm na sua grande maioria um próprio servidor DNS, que resolve IPs para os \textit{hostnames} das máquinas presentes na rede que adquiriram o seu IP via DHCP, e como o \textit{hostname} de todos os \textit{hubs} é \textit{homewatch-hub}, este processo torna-se perfeitamente fazível. Este mecanismo é bastante útil para efetuar o \textit{setup} inicial do \textit{hub} com a API do \textit{middleware}, podendo obter o URL do \textit{hub} sem grandes problemas. No entanto, é preciso referir que obviamente só podemos recorrer a este mecanismo quando estamos na rede local do \textit{hub}, sendo impossível recorrer a esta operação numa rede externa.
+
+Apesar da facilidade de uso e configuração dos túneis do \textit{ngrok}, temos problemas claros utilizando esta abordagem. De seguida iremos enumerar os principais problemas na utilização desta tecnologia.
+
+\paragraph*{Geração Aleatória de URLs}
+
+O primeiro contratempo encontrado logo antes de se montar o sistema à volta desta tecnologia foi a geração automática do URL, que obriga os utilizadores a reconfigurarem os dados da sua casa, na aplicação que acede ao \textit{middleware}, sempre que o \textit{hub} reinicia (regenerando assim o URL). A solução parcial para este problema foi o desenvolvimento do mecanismo de deteção à base dos servidores de DNS locais (dos \textit{routers} do utilizador) e da API do \textit{ngrok}, que se traduz no clique de um botão na aplicação para detetar e atualizar o túnel de uma casa. Apesar de ser uma boa solução, não é perfeita, havendo o inconveniente de as tarefas automatizadas não funcionarem enquanto que o URL do túnel não for atualizado, uma vez que qualquer tentativa de acesso ao \textit{hub} vai acabar com um erro.
+
+\paragraph*{Limite de Conexões HTTP}
+
+O outro problema consiste no limite de conexões HTTP imposto pelo \textit{ngrok} (20 por minuto), que põe em causa o funcionamento do \textit{polling} efetuado aos dispositivos através deste túnel no âmbito das tarefas automatizadas, uma vez que, cada \textit{triggered task} está sempre a monitorizar um dado dispositivo. A solução que resolveu este problema com sucesso foi a utilização de conexões persistentes HTTP \footnote{\textit{RFC HTTP Persistent Connections}: \url{https://www.w3.org/Protocols/rfc2616/rfc2616-sec8.html}}, que permite a reutilização de conexões HTTP, não causando a exaustão prematura das mesmas. Esta limitação também é evidente apenas no plano base (que é grátis), que foi utilizado para desenvolvimento.
+
+\paragraph*{Segurança}
+
+Por fim temos o problema de segurança, uma vez que apesar do tráfego dentro do túnel utilizar HTTPS (estando encriptado portanto), qualquer pessoa pode aceder ao túnel, caso tenha o URL de acesso, e enviar comandos para o \textit{hub}. De momento resolvemos esse problema manualmente, com o tal sistema de \textit{tokens} referido na arquitetura.
+
+Num cenário ideal podia-se utilizar o \textit{ngrok link}\footnote{\textit{ngrok link}: \url{https://ngrok.com/product/ngrok-link}}, que oferece todos os benefícios deste software assim como outras funcionalidades que tornam a utilização desta tecnologia em massa muito mais acessível. Este plano resolve todos os problemas encontrados oferecendo ainda mecanismos avançados para a gestão em massa de túneis, que é exatamente o que acontece no nosso caso.
+\begin{itemize}
+    \item Gestão de túneis \textit{ngrok} em grande escala
+    \item Reserva de endereços, basicamente garantindo a cada túnel um endereço único que nunca muda
+    \item Encriptação avançada com \textit{tokens} e credenciais diferentes para cada túnel
+    \item Utilização de HTTP/2 que oferece ganhos de performance consideráveis face ao HTTP
+    \item IP \textit{whitelisting}, que permite garantir o acesso exclusivo apenas a certos IPs (neste caso apenas o IP da rede local do utilizador e o IP do servidor da \textit{api} eram \textit{whitelisted})
+\end{itemize}
+
+Todas estas vantagens eram oferecidas a partir de uma API poderosa exclusiva aos assinantes do \textit{ngrok link}. Esta tecnologia não foi utilizada uma vez que era orientada a negócios e a infraestruturas, não conseguindo ter acesso à mesma, no entanto, a escolha recaiu na versão base do \textit{ngrok} que permite demonstrar o funcionamento desta arquitetura e num cenário perfeito seria utilizado o \textit{ngrok link}.
+
+No entanto, podemos concluir que, apesar de todas as desvantagens deste mecanismo, foi o único que se mostrou fiável o suficiente, tendo um custo de implementação bastante baixo. A utilização deste mecanismo simplificou bastante o processo de desenvolvimento e testes, permitindo alcançar a funcionalidade essencial do controlo remoto de dispositivos fora da rede local dos mesmos, mantendo um nível de segurança aceitável.
+
+\paragraph*{Exemplo de utilização}
+
+Utilizando este túnel, é possível então definir e obter os estados dos dispositivos na casa do utilizador, para isso basta chamar a API do \textit{hub} através deste URL gerado pelo \textit{ngrok}.
+
+\begin{minted}{ruby}
+  def get_status
+    Curl.get(uri) do |http|
+      http.headers["Content-Type"] = "application/json"
+      http.headers["Authorization"] = home.token
+    end
+  end
+  
+  def send_status(status)
+    Curl.put(uri, status.to_json) do |http|
+      http.headers["Content-Type"] = "application/json"
+      http.headers["Authorization"] = home.token
+    end
+  end
+  
+  private
+  
+  def connection_params
+    connection_info.merge(subtype: subtype)
+  end
+
+  def uri
+    home.tunnel + self.class.route + "?" + connection_params.to_query
+  end
+\end{minted}
+
+Aqui definimos dois métodos auxiliares que ajudam a determinar a rota do dispositivo, onde fazemos uso do URL do túnel, combinado com a descrição da rota \textit{self.class.route}, seguido depois dos parâmetros de conexão, basicamente os parâmetros presentes no \textit{connection\_info} mais o subtipo, que são enviados na \textit{query string} do pedido. Depois fazemos uso do cliente HTTP \textit{curl} para então comunicar através do túnel, no caso do \textit{get\_status} basta apenas fazer um pedido GET para a rota gerada para obter o estado do dispositivo, já o método \textit{put\_status} basta fazer um pedido HTTP do tipo PUT com o novo estado desejado para o dispositivo. 
+
+De resto, este túnel só voltar a ser utilizado na descoberta de dispositivos, onde basicamente o funcionamento é o mesmo.
+
+\subsubsection{Meta-Programação}
+
+Este componente, tendo sido desenvolvido em \textit{Ruby on Rails}, teve um desenvolvimento rápido e sem grandes problemas de repetição de código, devido às políticas utilizadas na \textit{framework}. Mesmo assim, houve uma pequena parte da aplicação onde se recorreu a meta-programação para efetivamente reduzir a quantidade de código desenvolvendo, melhorando a legibilidade e a manutenibilidade do mesmo.
+
+O mecanismo está presente nas \textit{triggered tasks}, e é responsável por efetuar a comparação entre o estado fornecido na tarefa e o estado atual do dispositivo a monitorizar. Recorreu-se então a um mecanismo muito interessante presente no \textit{ruby}, que permite chamar um método num objeto dinamicamente, através de um método presente em todos os objetos do ruby, o \textit{send}.
+
+\begin{minted}{ruby}
+  class HelloWorld
+    def hello(n)
+      n.times { puts "Hello World" }
+    end
+  end
+
+  hello_world = HelloWorld.new
+
+  hello_world.send("hello", 5)
+\end{minted}
+
+Utilizando este método podemos chamar outros métodos, inclusive métodos privados, passando como argumento o nome do método e os restantes argumentos caso existam. Neste exemplo, criamos uma classe com um método \textit{hello}, que imprime \textit{''Hello World''} \textit{N} vezes, e depois executamos esse método recorrendo ao \textit{send}, passando o nome do método que queremos executar como segundo argumento, e os restantes argumentos de seguida, deste caso, o número de vezes que queremos imprimir aquela \textit{string}. De notar que podemos passar o nome do método que desejamos executar como \textit{string} ou símbolo, ou seja \textit{''hello''} ou \textit{:hello}.
+
+No nosso caso recorremos a este mecanismo para executar uma operação de comparação variável, comparando um dado valor com outro com base num operador lógico à escolha. Isto porque o caso de uso das \textit{triggered tasks} era os utilizadores poder criar regras com base no estado de outros dispositivos com a maior liberdade possível, podendo criar tarefas como os seguintes exemplos:
+\begin{itemize}
+  \item Ligar a luz da garagem se o sensor de movimento colocado na mesma detetar movimento
+  \item Desligar o sistema de ar condicionados interior se a temperatura registada pela estação meteorológica do jardim for inferior a 18ºC
+\end{itemize}
+
+Então, recorrendo a meta-programação, podemos pegar no \textit{comparator} presente em cada \textit{triggered task}, e utiliza-lo para comprar os estados do dispositivo monitorizado e o estado associado à tarefa.
+
+\begin{minted}{ruby}
+  def compare_remote_status(remote_status, status, comparator)
+    status.each do |key, value|
+      return false unless remote_status[key].send(comparator, value)
+    end
+
+    true
+  rescue NoMethodError
+    false
+  end
+\end{minted}
+
+Este método compara ambos os estados chave a chave, sendo que o \textit{remote\_status} é proveniente do dispositivo monitorizado e o\textit{status} é o estado alvo fornecido à tarefa em questão, utilizando um comparador que pode ser um qualquer operador lógico, como por exemplo, \textit{==} ou \textit{>=}, e quando a comparação tem um valor falso, terminamos de imediato o método, retornando um valor falso provando que ambos os estados não são iguais. Caso as comparações entre todos os elementos de ambos os estados tenham um valor verdadeiro, o valor retornado por este método também será verdadeiro, e, nesse caso, a tarefa será ativada.
+
+Obviamente que este mecanismo é algo arriscado, uma vez que é propenso à injeção de instruções, porque o \textit{send} interpreta todo o código enviado como parâmetro, mas neste caso filtramos o valor do atributo \textit{comparator}, aceitando apenas os comparadores lógicos, eliminando este mesmo risco.
+
+\subsubsection{\textit{Async Jobs}}
+
+O último detalhe de relevo são as tarefas de \textit{background}, \textit{jobs} assíncronos que são executados em segundo plano, para não sobrecarregar os servidores aplicacionais que tratam da lógica computacional e do tratamento de pedidos HTTP.
+
+Por defeito, o \textit{Rails} já inclui uma biblioteca de tratamento de tarefas assíncronas, chamada de \textit{ActiveJob}, que permite delegar tarefas computacionais com um tempo de execução moderado ou longo para uma \textit{queue} onde serão processados assincronamente. Tarefas como o envio de emails, \textit{newsletters}, análise de dados, envio de notificações são normalmente executados utilizado esta biblioteca. 
+
+Por defeito o \textit{ActiveJob} suporta dois modos de funcionamento, \textit{inline} ou \textit{async}, onde o primeiro executa as tarefas imediatamente (útil durante o desenvolvimento ou testes da aplicação), e o segundo executa as tarefas no mesmo processo só que numa \textit{thread pool} limitada, alcançando uma execução assíncrona. Ambos estes modos são úteis para desenvolvimento, mas muito limitados para executar durante a fase de produção, sendo necessário mecanismos superiores para processar estas tarefas, sendo o \textit{DelayedJob} um deles, um mecanismo que guarda os trabalhos por executar numa base de dados, que pode ser a mesma base de dados utilizada pelo \textit{Rails}, tendo depois um ou vários processos consumidores, que consultam esta base de dados para irem executando tarefas assim que tiverem disponibilidade, funcionando como uma \textit{queue} essencialmente. Isto tem muitas vantagens a nível de performance, porque podemos separar completamente o processamento de tarefas assíncronas para outros processos e até outros sistemas, desde que tenham acesso à base de dados que contém as tarefas.
+
+O \textit{DelayedJob} ainda tem uma outra funcionalidade interessante, oferecida por um plugin chamado de \textit{DelayedCronJob}, que permite criar tarefas recorrentes recorrendo a expressões \textit{cron}, basicamente oferecendo a funcionalidade das nossas \textit{Timed Tasks}, que também utilizam expressões \textit{cron}.
+
+De seguida podemos ver um exemplo de um \textit{ActiveJob}:
+
+\begin{minted}{ruby}
+  class LongRunningJob < ApplicationJob
+    queue_as :default
+ 
+    def perform(*args)
+      # tarefa complexa de longo tempo de execução
+    end
+  end
+\end{minted}
+
+Essencialmente, cada tarefa é uma classe, possuindo um método \textit{perform} que executa a tarefa em si com os dados argumentos. Estas tarefas podem ser executadas da seguinte maneira:
+
+\begin{minted}{ruby}
+  # executar assincronamente
+  LongRunningJob.perform_later(args)
+  
+  # executar daqui a uma semana
+  LongRunningJob.set(wait: 1.week).perform_later(guest)
+\end{minted}
+
+No entanto, o \textit{DelayedJob} oferece um mecanismo mais simplista, que é o que é usado na \textit{api}. De seguida um pequeno exemplo:
+
+\begin{minted}{ruby}
+  thing.delay.put_status(on: false)
+\end{minted}
+
+Como podemos ver, isto torna a criação de \textit{async jobs} muito mais simplista. Com o plugin \textit{DelayedCronJob} podemos especificar a tal expressão \textit{cron}:
+
+\begin{minted}{ruby}
+  thing.delay(cron: "0 0 12 * *").put_status(on: false)
+\end{minted}
+
+Este mecanismo é utilizado então em 3 aspetos diferentes, gestão de tarefas \textit{triggered} e \textit{timed}, assim como os mecanismos de segurança do \textit{hub}, e, por fim, a aplicação de cenários, onde os dispositivos associados a um cenário são ativados assincronamente, para não bloquear os servidores aplicacionais.
+
+\subsubsection{\textit{Service Objects}}
+
+Como já foi referido na arquitetura, a \textit{api} iria recorrer a uma arquitetura MVC, bastante utilizada em paradigmas web, que também é a arquitetura base adaptada pela framework \textit{Ruby on Rails}. Nesta arquitetura dividimos o \textit{core} da aplicação em 3 tipos de componentes, \textit{models}, que representam a informação base do sistema, \textit{views}, que são a representação visual ou textual dos dados do sistema, e por fim, os \textit{controllers} que aceitam parâmetros externos fazendo alterações nos \textit{models}.
+
+Utilizando o \textit{Rails} esta arquitetura torna-se muito simples de utilizar, tendo um \textit{model} para cada recurso da aplicação, como um \textit{User}, uma \textit{Home} ou uma \textit{Thing}, tendo cada um destes métodos para obtenção e manipulação de dados, recorrendo á biblioteca criada pela equipa do \textit{Rails}, o \textit{ActiveRecord}.
+
+De seguida podemos ver um exemplo de um \textit{controller} muito simples:
+
+\begin{minted}{ruby}
+  class TodosController < ApplicationController
+    # POST /todos
+    def create
+      todo = Todo.create!(todo_params)
+        
+       render json: todo
+    end
+    
+    private
+    
+    def todo_params
+      # whitelist params
+      params.permit(:title, :created_by)
+    end
+  end
+\end{minted}
+
+Como podemos ver este código segue muitas das filosofias valorizadas pelo \textit{Rails}, sendo muito simples e fácil de compreender. Outra convenção é a nomeação dos métodos do \textit{controller}, devendo seguir a tal arquitetura REST, que já visitamos anteriormente no capítulo da arquitetura.
+
+No entanto, este \textit{controller} é muito básico, apenas tendo funcionalidades CRUD. Por vezes, certos métodos dos \textit{controllers} efetuam operações mais avançadas, por exemplo, no nosso caso sempre que um utilizador cria uma casa, a aplicação deve automaticamente efetuar a autenticação com o \textit{hub}. Se introduzisse-mos essa lógica no método \textit{create} do \textit{controller}, este ficaria muito grande e difícil de manter, portanto recorremos a um \textit{service object}.
+
+\begin{minted}{ruby}
+  def create
+    create_home_service = CreateHome.new(user: current_user, params: home_params)
+    home = create_home_service.perform
+
+    if create_home_service.status
+      render json: home, status: :created
+    else
+      render json: home.errors, status: :unprocessable_entity
+    end
+  end
+\end{minted}
+
+Como podemos ver, mantemos uma legibilidade aceitável no método, extraindo a lógica mais complexa para um serviço. Os serviços são objetos comuns, que possuem um método \textit{perform}, responsável por executar a operação correspondente a este serviço. Caso a operação seja completada com sucesso, o serviço irá definir o seu atributo \textit{status} como verdadeiro.
+
+Este serviço em particular, grava o registo da casa do utilizador na base de dados, efetua a autenticação no \textit{hub} gravando o \textit{token} no próprio registo da casa, e depois cria um \textit{DelayedJob} que regenera este \textit{token} todos os dias às 00:00.
+

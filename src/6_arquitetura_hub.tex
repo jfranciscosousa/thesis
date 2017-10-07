@@ -216,3 +216,11 @@ Este pedido procura por dispositivos do tipo \textit{rest} que estejam a operar 
 \end{verbatim}
 
 Basicamente trata-se de uma lista JSON com os dispositivos encontrados. Internamente são os serviços que são serializados para JSON, serializando os atributos relevantes ao funcionamento do serviço, neste caso \textit{address}, \textit{port}, \textit{subtype} e \textit{type}.
+
+\paragraph*{Segurança}
+
+Como em todos os projetos de IoT, a segurança é um tópico importantíssimo e o este projeto não é diferente nesse aspeto. Para atingir níveis aceitáveis de segurança efetuamos um método de autenticação à base de \textit{tokens}, de modo a garantir acesso exclusivo de um \textit{hub} à \textit{api}.
+
+O processo é muito simples, a aplicação irá ter um \textit{controller} e uma rota associado a este, que permite a aquisição de um \textit{token} que garanta o acesso exclusivo aos recursos do \textit{hub}. Este \textit{token} deverá ser obtido pela \textit{api}, no momento em que o utilizador efetua a configuração do seu \textit{hub} através da aplicação cliente, e daí em diante todos os pedidos feitos ao \textit{hub} do utilizador devem ser acompanhados de este \textit{token}, presente no cabeçalho do pedido HTTP, no campo \textit{Authorization}. 
+
+De notar que até que um \textit{token} seja adquirido, o \textit{hub} encontra-se desprotegido, mas após a aquisição este fica completamente bloqueado a pedidos que não possuam este \textit{token}. Também é necessário que apesar deste mecanismo, não é o nosso trabalho aumentar a proteção dos dispositivos a que o \textit{hub} acede, apenas os protegemos do acesso externo feito a partir da API do \textit{hub}, o trabalho de proteger os dispositivos de ataques diretos aos mesmos está ao cabo dos fabricantes.

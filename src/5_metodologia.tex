@@ -1,8 +1,8 @@
 \chapter{Metodologia}
 
-Como todos os projetos de software bem estruturados e desenhados, serão utilizadas práticas e metodologias já existentes e comprovadas no mundo real. Neste capítulo irão ser demonstrados alguns dos elementos utilizados.
+Grande parte desta dissertação passa então pela concepão e implementação de um todo sistema de software, e devido a tal, serão utilizadas práticas de desenvolvimento comprovadas na indústria e que se adequem à natureza do projeto. Nesta capítulo iremos então detalhar as abordagens que irão ser adoptadas, assim como as suas vantagens relativas.
 
-\section{Iterative and Incremental development}
+\section{Iterative and Incremental Development}
 
 Esta prática consiste numa combinação de práticas incrementais e iterativas, onde essencialmente um produto de software é separado em componentes, sendo que cada um destes componentes é iterativamente implementado. Essencialmente, esta metodologia de desenvolvimento irá ter os seguintes passos, para a elaboração de cada componente:
 \begin{itemize}
@@ -29,19 +29,29 @@ Sistemas de software de  grande dimensão devem seguir os mesmos standards sint�
 
 \section{Continuous Integration}
 
-Todos os componentes do sistema irão ser mantidos num sistema de controlo de versões, nomeadamente o \textit{git}, utilizando o serviço de \textit{hosting} do \textit{GitHub}, para manter todos os repositórios na \textit{cloud}. Utilizando o \textit{GitHub}, é possível efetuar várias integrações com outras ferramentas de \textit{testing} e \textit{deployment} que nos permitem seguir esta metodologia de \textit{continuous integration}.
-
-\textit{Continuous integration} é o nome que se dá à prática de continuamente testar e integrar o código do software nos sistemas onde eles irão operar. O \textit{workflow} utilizado irá fazer uso do \textit{GitHub}, um sistema de \textit{hosting} de \textit{git}, o sistema de controlo de versões a ser utilizado, e, finalmente, do \textit{Travis}, uma plataforma de execução de testes automáticos.
+Todos os componentes do sistema irão ser mantidos num sistema de controlo de versões, nomeadamente o \textit{git}, utilizando o serviço de \textit{hosting} do \textit{GitHub}. Utilizando este serviço, é possível efetuar várias integrações com outras ferramentas de \textit{testing} e \textit{deployment} que nos permitem seguir esta metodologia de \textit{continuous integration}, onde se testa e coloca-se uma aplicação pronta para ambientes de produção continuamente, sem a interação manual dos programadores.
 
 Utilizando estes recursos é possível testar a última versão do código assim que ele é \textit{pushed} para o repositório remoto. Basicamente, assim que um novo \textit{commit} é \textit{pushed} para o \textit{GitHub}, o \textit{Travis} corre os testes dessa nova versão do software, reportando o resultado para o \textit{GitHub}. Além dos testes, também são executadas nesta fase as ferramentas de análise de código, retornando uma \textit{build} errónea caso elas detetem problemas.
 
 \begin{figure}[H]
   \centering
-        \includegraphics[scale=1]{img/github.jpg}
+        \includegraphics[scale=0.65]{img/github.jpg}
   \caption{Integração Travis \& GitHub}
 \end{figure}
 
 Neste exemplo, o \textit{commit} ''Fix home token bug'' passou os testes definidos enquanto que o último \textit{commit} ''Normalize status codes'' falhou os testes.
+
+Quanto a metodologia dos testes não foi seguida nenhuma em específico, apenas foi feito um esforço para se ter o maior número de linhas de código e funcionalidades cobertas pelos mesmos.
+
+Em todos os repositórios é possível obter um \textit{coverage report}, que relata a cobertura dos testes sobre as aplicações. Para isto recorreu-se ao serviço \textit{codecov}, que gera estes relatórios automaticamente a partir do \textit{Travis}.
+
+\begin{figure}[H]
+  \centering
+        \includegraphics[scale=0.65]{img/github-badges.jpg}
+  \caption{Integração Travis \& GitHub}
+\end{figure}
+
+Acima é possível ver dois crachás gerados pelo \textit{codecov} e pelo \textit{Travis} respetivamente, que denotam a cobertura do código no que toca a testes, assim como o estado dos testes feitos à ultima \textit{build}.
 
 Os componentes do sistema que necessitarem de um sistema de \textit{hosting} irão recorrer ao \textit{Heroku}, uma \textit{platform as a service}, que permite correr qualquer tipo de serviço web sem custos. A única limitação consiste no adormecimento dos serviços, ou seja, todos os serviços grátis ''adormecem'' ao fim de 30 minutos sem receberem qualquer tráfego.
 

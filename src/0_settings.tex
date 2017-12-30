@@ -8,6 +8,8 @@
 \usepackage{indentfirst}
 \usepackage{caption}
 \usepackage{float}
+\usepackage{pdfpages}
+\usepackage{epigraph}
 %\usepackage[hidelinks]{hyperref}
 \setlength{\headheight}{16.49677pt}
 
@@ -66,13 +68,12 @@
 \rfoot{\thepage}
 \fancyfoot[R]{\thepage}
 \renewcommand{\headrulewidth}{1pt}
-%\renewcommand{\footrulewidth}{1pt}
 
 % Styles for chapter pages
 \fancypagestyle{plain}{% % <-- this is new
   \fancyhf{}
   \fancyfoot[R]{\thepage}
-  \renewcommand{\headrulewidth}{0pt}}
+\renewcommand{\headrulewidth}{0pt}}
 
 \lstset{%
   basicstyle=\ttfamily,

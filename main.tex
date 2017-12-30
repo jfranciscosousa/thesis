@@ -11,15 +11,23 @@
 
 
 \input{src/0_settings.tex}
+\input{src/0_capa.tex}
 
 \begin{document}
-
-\input{src/0_capa.tex}
+\begin{minipage}[t][0pt]{\linewidth}
+\umfrontcover	
+\end{minipage}
+\newpage
+\begin{minipage}[t][0pt]{\linewidth}
+\umtitlepage
+\end{minipage}
 
 \pagenumbering{gobble}
 \tableofcontents
 \listoffigures
 \listoftables
+\input{src/0_agradecimentos.tex}
+\input{src/0_resumo.tex}
 \pagenumbering{arabic}
 
 \input{src/1_introducao.tex}
@@ -42,7 +50,7 @@
 
 \newpage
 \nocite{*}
-\chapter{Bibliografia}
+\chapter*{Bibliografia}
 \printbibliography[heading=none]
 
 \end{document}

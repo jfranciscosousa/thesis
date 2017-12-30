@@ -1,13 +1,13 @@
-\subsection{Api}
+\subsection{Middleware}
 
-A \textit{api} é a parte central do projeto, contendo toda a lógica e funcionalidades para responder aos problemas encontrados. Como já foi explicado anteriormente, a \textit{api} irá adotar uma arquitetura \textit{REST}, utilizando HTTP como protocolo de transporte. Nesta secção será delineada a arquitetura interna da \textit{api}, e, posteriormente, os vários \textit{endpoints} e métodos da aplicação.
+O \textit{middleware} é a parte central do projeto, contendo toda a lógica e funcionalidades para responder aos problemas encontrados, assim como a especificação dos interfaces de acesso (API). Como já foi explicado anteriormente, a API do \textit{middleware} irá adotar uma arquitetura \textit{REST}, utilizando HTTP como protocolo de transporte.
 
-Como arquitetura deverá ser adotado o modelo MVC, que efetua a correta separação entre as três camadas essenciais de uma aplicação \textit{enterprise}, dados, lógica de negócio e apresentação, que mapeia para os conceitos, \textit{model}, \textit{controller}, \textit{view}. Este padrão é bastante predominante em aplicações web, inclusive APIs REST, porque torna muito mais manutenível e legível, um sistema complexo com vários tipos de modelos e operações. Além desta abordagem será utilizada uma \textit{service layer}, para efetuar operações complicadas de mais para aparecer num \textit{controller}.
+Tal como o \textit{hub}, o \textit{middleware} deverá seguir uma arquitetura MVC, efetuando a correta separação entre as três camadas essenciais de uma aplicação \textit{enterprise}, dados, lógica de negócio e apresentação, que mapeia para os conceitos, \textit{model}, \textit{controller}, \textit{view}. Este padrão é bastante predominante em aplicações web, inclusive APIs REST, porque torna muito mais manutenível e legível, um sistema complexo com vários tipos de modelos e operações. Além desta abordagem será utilizada uma \textit{service layer}, para efetuar operações complicadas de mais para aparecer num \textit{controller}.
 
-Neste cenário os \textit{models} são apenas \textit{placeholders} para os dados vindos da base de dados, sendo utilizado qualquer tipo de camada ORM para efetuar o mapeamento de dados. Os \textit{controllers} têm como objetivo receber os parâmetros dos pedidos à API, efetuando operações necessárias na base de dados, através da camada ORM, recorrendo a \textit{service objects} quando a lógica se torna complexa demais.
+Neste cenário os \textit{models} são apenas \textit{placeholders} para os dados vindos da base de dados, sendo utilizado qualquer tipo de camada \textit{Object Relation Mapping} (ORM) para efetuar o mapeamento de dados. Os \textit{controllers} têm como objetivo receber os parâmetros dos pedidos à API, efetuando operações necessárias na base de dados, através da camada ORM, recorrendo a \textit{service objects} quando a lógica se torna complexa demais.
 
 Ao contrário do \textit{hub}, que utilizava apenas um subconjunto muito simples da arquitetura REST, esta parte do projeto apresenta um nível de complexidade bastante superior, no que toca aos elementos RESTful, e como tal, serão detalhadas as ações REST utilizadas.
-Como é normal em \textit{designs} REST, as aplicações são divididas em recursos, como por exemplo ''utilizadores'' ou ''casas'', e cada recurso possui métodos CRUD para serem manipulados. Utilizando HTTP, os recursos são representados por URLs e são utilizados os métodos do protocolo para manipular os recursos. De seguida, uma especificação das ações REST mais comuns e a sua implementação utilizando o protocolo HTTP.
+Como é normal em \textit{designs} REST, as aplicações são divididas em recursos, como por exemplo ''utilizadores'' ou ''casas'', e cada recurso possui métodos CRUD para serem manipulados. Utilizando HTTP, os recursos são representados por URLs e são utilizados os métodos do protocolo para manipular os recursos. Na Tabela 2 podemos ver uma especificação das ações REST mais comuns e a sua implementação utilizando o protocolo HTTP.
 
 \begin{table}[H]
 \centering
@@ -25,14 +25,13 @@ Como é normal em \textit{designs} REST, as aplicações são divididas em recur
 
 Portanto, esta aplicação é composta por recursos, sendo cada um deles manipulado por um \textit{controller}, fazendo alterações no respetivo \textit{model}, sendo as suas alterações representadas pela sua \textit{view}, que neste caso são simples classes de utilidade que serializam objetos para JSON. Os \textit{controllers} serão compostos pelas ações da tabela acima, sendo cada ação um método no \textit{controller}. Posto isto, cada método será mapeado para uma rota, que é uma combinação de um URL com um método HTTP, semelhante ao que vimos na tabela 2.
 
+Os métodos dos \textit{controllers} no geral são simples, consistindo apenas em chamadas à API de acesso aos dados, um mecanismo de ORM que já vimos. No entanto, em alguns casos, estes métodos podem envolver mais do que a criação de registos na base de dados, podendo interagir com múltiplos tipos de objetos diferentes, utilizando transações. Nestes casos mais complexos iremos recorrer a algo chamado de \textit{service objects}, um elemento extra que retira alguma complexidade dos \textit{controllers} encapsulando essa lógica complexa num serviço.
 
-% FAZER UM DIAGRAMA AQUI SFF
+Quanto á lógica interna em si, o \textit{middleware} segue exatamente o modelo de domínio desenvolvido na Figura 10, e como esta parte do projeto é na integra uma aplicação web, não iremos modela-la extensivamente, uma vez que será utilizada uma \textit{framework} web que facilite esse processo. Neste capítulo, vamos ainda ver a especificação da API, que as aplicações clientes devem utilizar para interagir com o \textit{middleware}.
 
+\section{Especificação API}
 
-
-\subsubsection{Recursos}
-
-Os recursos que compõem esta parte do projeto são baseados no modelo de domínio feito anteriormente, havendo quase um mapeamento perfeito do modelo para recursos da aplicação. De seguida, serão apresentados os diferentes recursos, as rotas de acesso aos mesmos, assim como o formato dos elementos dos diferentes recursos. O formato dos elementos segue os mesmos formatos da especificação JSON, porque de facto são objetos em JSON, tendo os seguintes tipos:
+Nesta secção vamos expor a especificação da API, mostrando também o formato dos objetos que a compõem. Os recursos que compõem a API do \textit{middleware} são baseados no modelo de domínio feito anteriormente, havendo quase um mapeamento perfeito do modelo para recursos da aplicação. De seguida, serão apresentados os diferentes recursos, as rotas de acesso aos mesmos, assim como o formato dos elementos dos diferentes recursos. O formato dos elementos segue os mesmos formatos da especificação JSON, porque de facto são objetos em JSON, tendo os seguintes tipos:
 \begin{itemize}
     \item string
     \item number
@@ -99,7 +98,7 @@ Este recurso representa as diversas casas dos utilizadores, contendo informaçã
     \item ip{\_}address - string
 \end{itemize}
 
-Os atributos \textit{name} e \textit{location} são apenas utilidades para o próprio utilizador categorizar a sua casa na aplicação, já o \textit{tunnel} é um objeto que contém informação para conectar com o \textit{hub} na casa do utilizador. Internamente, a \textit{api} atribui um endereço IP à casa, o mesmo IP proveniente do pedido HTTP. Na próxima secção, onde irão ser detalhados os aspetos da implementação mais importantes, irá ser delineado a tecnologia utilizada no mecanismo de \textit{tunneling} entre o \textit{hub} e a \textit{api}.
+Os atributos \textit{name} e \textit{location} são apenas utilidades para o próprio utilizador categorizar a sua casa na aplicação, já o \textit{tunnel} é um objeto que contém informação para conectar com o \textit{hub} na casa do utilizador. Internamente, o \textit{middleware} atribui um endereço IP à casa, o mesmo IP proveniente do pedido HTTP. Na próxima secção, onde irão ser detalhados os aspetos da implementação mais importantes, irá ser delineado a tecnologia utilizada no mecanismo de \textit{tunneling} entre o \textit{hub} e o \textit{middleware}.
 
 \paragraph*{Things}
 
@@ -135,7 +134,7 @@ Nestas ações já se pode ver \textit{nesting} de rotas, uma vez que é necess�
 
 O atributo \textit{name}, mais uma vez, só serve para caracterizar o dispositivo, não tendo nenhuma funcionalidade em específico. O tipo e subtipo são essenciais para comunicar com os dispositivos através do \textit{hub}, sendo os restantes parâmetros que variam de acordo com o subtipo fornecidos através do atributo variável \textit{connection{\_}info}.
 
-As \textit{things} terão métodos para obter e alterar o seu estado, \textit{getStatus} e \textit{putStatus} utilizando o objeto \textit{tunnel} de uma \textit{home} para estabelecer conexão. Estes métodos serão utilizados noutro recurso para expor estes mecanismos na \textit{api}.
+As \textit{things} terão métodos para obter e alterar o seu estado, \textit{getStatus} e \textit{putStatus} utilizando o objeto \textit{tunnel} de uma \textit{home} para estabelecer conexão. Estes métodos serão utilizados noutro recurso para expor estes mecanismos na API do \textit{middleware}.
 
 \paragraph*{Things Status}
 
@@ -147,7 +146,7 @@ Este recurso permite obter os estados dos dispositivos, evocando os métodos do 
     \item PUT/PATCH /things/:thing{\_}id/status -> UPDATE
 \end{itemize}
 
-O formato dos objetos depende do tipo da \textit{thing} fornecida, sendo que  podem ser inferidos através da figura \ref{fig:things-hub}, que apresenta os tipos diferentes de \textit{things} e os seus atributos.
+O formato dos objetos depende do tipo da \textit{thing} fornecida, sendo que  podem ser inferidos através da Figura \ref{fig:things-hub}, que apresenta os tipos diferentes de \textit{things} e os seus atributos.
 
 \paragraph*{Things Discovery}
 

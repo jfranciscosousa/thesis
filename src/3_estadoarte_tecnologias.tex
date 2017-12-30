@@ -1,10 +1,12 @@
 \section{Tecnologias}
 
+De seguida iremos rever algumas das tecnologias comerciais e \textit{open-source} mais relevantes de momento. Serão revistas as funcionalidades principais, assim como o modo de operação finalizando com os pontos fracos que deveremos tentar resolver na solução a desenvolver.
+
 \subsection{Apple Homekit}
 
 O Apple Homekit não é uma aplicação por si só, é uma espécie de base de dados semelhante ao Passkit e ao Healthkit também desenvolvidos pela Apple. Todas estes ''kits'' são utilizados pelas respetivas aplicações, neste caso o Homekit tem a aplicação Home, o PassKit tem o Passbook e o HealthKit o Health.
 
-O Homekit neste caso tem como função armazenar uma coleção de dispositivos relativos a casas inteligentes, oferecendo ainda funcionalidades mais avançadas como \textit{triggers}, onde é possível configurar um grupo de ações a executar com base em certos \textit{triggers}, como a hora, a localização do utilizador ou com base nos dados de algum dispositivo. Por exemplo, é possível configurar o sistema de modo a que ele ligue as luzes e abra a porta principal quando o utilizador estiver nas imediações da casa, ou até, ligar ou desligar o aquecimento a uma certa hora do dia.
+O Homekit tem como função armazenar uma coleção de dispositivos relativos a casas inteligentes, oferecendo ainda funcionalidades mais avançadas como \textit{triggers}, onde é possível configurar um grupo de ações a executar com base em certos \textit{triggers}, como a hora, a localização do utilizador ou com base nos dados de algum dispositivo. Por exemplo, é possível configurar o sistema de modo a que ele ligue as luzes e abra a porta principal quando o utilizador estiver nas imediações da casa, ou até, ligar ou desligar o aquecimento a uma certa hora do dia.
 
 O Homekit possui também integração com a Siri, o assistente pessoal presente nos sistemas operativos da Apple, o que permite controlar os dispositivos registados no Homekit através de comandos de voz, como por exemplo, ''Siri fecha a porta da garagem''.
 
@@ -25,6 +27,8 @@ Os dados no Homekit são estruturados da seguinte forma hierárquica:
     \item Zones - são agrupamentos opcionais de salas, como por exemplo, ''1º andar'' ou ''garagem''. As zonas, tal como as salas, possuem apenas um nome. As zonas permitem ao utilizador utilizar comandos como, ''Siri, liga as luzes do 1º andar'', que irá ligar todas as luzes das salas do 1º andar.
 \end{itemize}
 
+Na figura 1 podemos ver uma organização básica dos elementos deste ecossistema.
+
 \begin{figure}[H]
   \centering
         \includegraphics[scale=0.56]{img/homekit-layout.png}
@@ -41,7 +45,7 @@ De seguida, um exemplo dos interfaces que demonstram os controlos do Apple Home,
 
 \subsubsection{API e interoperabilidade}
 
-A API oferecida pelo Homekit permite o controlo total da base de dados do utilizador mediante a autorização do mesmo. Além disto, apenas aplicações revistas pela Apple e distribuídas na AppStore é que podem aceder à API do Homekit. Isto não é entrave nenhum ao desenvolvimento no entanto, uma vez que o XCode, o ambiente de desenvolvimento da Apple, possui um módulo de simulação, onde é possível adicionar dispositivos de testes, para testar a funcionalidade de aplicações ''Homekit enabled''. Resumidamente, tudo o que é possível fazer através da aplicação Home, é possível através desta API programaticamente.
+A API oferecida pelo Homekit permite o controlo total da base de dados do utilizador mediante a autorização do mesmo. Além disto, apenas aplicações revistas pela Apple e distribuídas na AppStore é que podem aceder à API do Homekit. Isto não é entrave nenhum ao desenvolvimento, uma vez que o XCode, o ambiente de desenvolvimento da Apple, possui um módulo de simulação, onde é possível adicionar dispositivos de testes para testar a funcionalidade de aplicações ''Homekit enabled''. Resumidamente, tudo o que é possível fazer através da aplicação Home, é possível através desta API programaticamente.
 
 De notar, que a API possui apenas um SDK para Swift ou Objective-C, portanto, o desenvolvimento nesta tecnologia só pode ser feito no ecossistema da Apple, o que é um ponto a menos na interoperabilidade desta tecnologia.
 
@@ -51,7 +55,9 @@ O Android Things, originalmente chamado de Google Brillo, é um projeto orientad
 
 Este projeto é uma versão básica do sistema operativo Android, possuindo apenas os serviços ''core'' do mesmo, de maneira a que possua uma utilização de memória bastante reduzida, sendo ideal para sistemas embebidos, e tendo todas as ferramentas do SDK Android e interfaces programáticos de acesso aos serviços da Google.
 
-Todos os dispositivos utilizando o Android Things podem e devem ser conectados aos serviços cloud da Google, para que estejam sempre com as últimas atualizações dos serviços do sistema operativo. Além disso, os sistemas da Google recolhem constantemente informações do funcionamento dos dispositivos, via o protocolo Weave, e assim é possível aos programadores monitorizarem várias métricas de todos os seus dispositivos, como por exemplo, crash reports.
+Todos os dispositivos utilizando o Android Things podem e devem ser conectados aos serviços cloud da Google, para que estejam sempre com as últimas atualizações dos serviços do sistema operativo. Além disso, os sistemas da Google recolhem constantemente informações do funcionamento dos dispositivos, via protocolo Weave, e assim é possível aos programadores monitorizarem várias métricas de todos os seus dispositivos, como por exemplo, crash reports.
+
+De seguida podemos observar a arquitetura em camadas do \textit{Android Things}, vendo as diversas camadas de software que o compõem.
 
 \begin{figure}[H]
   \centering
@@ -61,11 +67,13 @@ Todos os dispositivos utilizando o Android Things podem e devem ser conectados a
 
 \subsubsection{Weave}
 
-O Weave é um protocolo de comunicação orientado à IoT, que permite que dispositivos desta área possam comunicar com smartphones e a cloud. O protocolo tem como objetivo abstrair as funções dos dispositivos IoT de modo a que possam ser reutilizado por várias aplicações e serviços web.
+O Weave é um protocolo de comunicação orientado à IoT, que permite que dispositivos desta área possam comunicar com \textit{smartphones} e a \textit{cloud}. O protocolo tem como objetivo abstrair as funções dos dispositivos IoT de modo a que possam ser reutilizado, por várias aplicações e serviços web.
 
 Este protocolo utiliza JSON como formato e a transmissão pode ser feita em HTTPS ou em XMPP. Além disso, este protocolo é protegido com SSL/TLS e a autenticação de dispositivos é feita utilizando OAuth 2.0 nos servidores de autenticação da Google. Utilizando este esquema de autenticação, a Google pode possibilitar a partilha destes dispositivos entre diferentes utilizadores, um pouco semelhante à partilha de documentos do Google Drive.
 
 O Weave tem como objetivo fornecer um meio de comunicação entre dispositivos, smartphones e a cloud. A integração na cloud é um ponto muito forte, uma vez que com esta tecnologia aplicações poderão interagir com os dispositivos dos utilizadores, depois da autorização dos mesmos.
+
+Na figura 4 podemos ver com um pouco de detalhe o funcionamento do protocolo Weave, e como os serviços do mesmo interagem com os dispositivos e as aplicações.
 
 \begin{figure}[H]
   \centering
@@ -105,41 +113,40 @@ Quanto ao Android Things, este oferece os serviços core do sistema operativo An
 \item \textbf{Instance ID} - serviço de validação de aplicações para Android, iOS ou extensões do navegador Chrome. Esta API permite gerar tokens para autenticar o acesso a recursos \textit{server side}. Este mecanismo garante que os recursos \textit{server side} possam ser apenas acedidos pelas aplicações clientes registadas neste serviço;
 \item \textbf{Awareness and Location} - esta API utiliza os sensores presentes no dispositivo para obter informações sobre os utilizadores das mesmas assim como o ambiente em geral;
 \item \textbf{Nearby} - este serviço expõe métodos de \textit{publish} e \textit{subscribe} baseados na proximidade. Dispositivos próximos podem então recorrer a esta API para efetuarem comunicação em tempo real. Este serviço permite também efetuar \textit{service discovery}, sendo possível reconhecer dispositivos na rede local.
-\item \textbf{Places} - através deste serviço é possível aceder a varias informações sobre locais no mundo, distribuídos por categorias, podendo por exemplo, localizar supermercados num raio de 5km à volta do utilizador;
-\item \textbf{Mobile Vision} - esta API é um serviço de reconhecimento facial, podendo identificar rostos humanos em fotos, vídeos e transmissões em direto. A API também é capaz de identificar elementos detalhados dos rostos humanos, detetando se uma pessoa esta de olhos fechados ou a sorrir por exemplo.
+\item \textbf{Places} - através deste serviço é possível aceder a várias informações sobre locais no mundo, distribuídos por categorias, podendo por exemplo, localizar supermercados num raio de 5km à volta do utilizador;
+\item \textbf{Mobile Vision} - esta API é um serviço de reconhecimento facial, podendo identificar rostos humanos em fotos, vídeos e transmissões em direto. A API também é capaz de identificar elementos detalhados dos rostos humanos, detetando se uma pessoa está de olhos fechados ou a sorrir por exemplo.
 \end{itemize}
 
 O sistema operativo pode ser instalado numa gama de placas de prototipagem selecionadas, como o Intel Edison ou o Raspberry Pi 3, mas também pode ser compilado e instalado em qualquer tipo de dispositivo.
 
-O projeto situa-se em \textit{open-beta}, e pode ser acedido via o portal para programadores da Google \cite{android-things}.
+O projeto situa-se em \textit{open-beta}, e pode ser acedido através do portal para programadores da Google \cite{android-things}.
 
 \subsection{Eclipse SmartHome}
 
-O EclipseSmart Home é uma framework para o desenvolvimento de produtos direcionados a casas inteligentes. É “open-source” e completamente livre ao público geral. A filosofia dos criadores desta framework assenta no facto que a única maneira de ter uma framework verdadeiramente extensível, aberta e preparada para a evolução constante deste mercado, é tornando a mesma “open-source”, para que qualquer indivíduo possa contribuir e para que não existam exclusividades proprietárias, como acontece noutras frameworks da área.
+O EclipseSmart Home é uma \textit{framework} para o desenvolvimento de produtos direcionados a casas inteligentes. É \textit{open-source} e completamente livre ao público geral. A filosofia dos criadores desta \textit{framework} assenta no facto que a única forma de ter uma \textit{framework} verdadeiramente extensível, aberta e preparada para a evolução constante deste mercado, é tornando a mesma \textit{open-source}, para que qualquer indivíduo possa contribuir e para que não existam exclusividades proprietárias, como acontece noutras \textit{frameworks} da área.
 
-Esta framework é compatível com qualquer tipo de sistema que consiga correr a JavaVirtualMachine. É uma framework OSGi 4.2+, sendo compatível com por exemplo o RaspberryPI, e um número de outras placas de prototipagem. Isto é uma grande vantagem no desenvolvimento, já que é possível efetuar o desenvolvimento para esta framework em MacOS, Linux e Windows.
+Esta \textit{
+framework} é compatível com qualquer tipo de sistema que consiga correr a JavaVirtualMachine. É uma \textit{framework} OSGi(\textit{Open Service Gateway Initiative}) 4.2+, sendo compatível, por exemplo, com o Raspberry Pi, e um número de outras placas de prototipagem. Isto é uma grande vantagem no desenvolvimento, já que é possível efetuar o desenvolvimento para esta \textit{framework} em MacOS, Linux e Windows.
 
 
-O SmartHome é orientado aos fabricantes de hardware, que podem preparar os seus dispositivos para serem compatíveis com soluções SmartHome, aos fabricantes de aplicações, que podem desenvolver as suas soluções para serem baseadas no SmartHome e tendo assim compatibilidade com uma vasta gama de dispositivos já existentes no mercado. Por fim, os programadores, que podem desenvolver extensões para o SmartHome que serão compatíveis com qualquer tipo de produto que utilize o SmartHome como base e até poderão disponibilizar estas extensões em plataformas comerciais.
+O SmartHome é orientado aos fabricantes de hardware, que podem preparar os seus dispositivos para serem compatíveis com soluções baseadas nesta tecnologia, aos fabricantes de aplicações, que podem desenvolver as suas soluções para serem baseadas no SmartHome e tendo assim compatibilidade com uma vasta gama de dispositivos já existentes no mercado. Por fim, os programadores, que podem desenvolver extensões para o SmartHome que serão compatíveis com qualquer tipo de produto que utilize esta \textit{framework} como base e até poderão disponibilizar estas extensões em plataformas comerciais.
 
-De acordo com o inquérito \cite{ieeesurvey} a programadores realizado pela IEEE sobre tecnologias utilizadas nesta área, o Eclipse SmartHome é a tecnologia mais utilizada, provando a grande comunidade por detrás desta framework.
+De acordo com o inquérito \cite{ieeesurvey} a programadores realizado pela IEEE sobre tecnologias utilizadas nesta área, o Eclipse SmartHome é a tecnologia mais utilizada, provando a grande comunidade por detrás desta \textit{framework}.
 
-Esta framework é bastante completa, sendo compatível com grande parte das soluções IoT existentes no mercado, e é além disso, completamente extensível. Existem vários \textit{plugins} desenvolvidos pela comunidade que oferecem compatibildade para todo o tipo de dispositivos.
+Esta \textit{framework} é bastante completa, sendo compatível com grande parte das soluções IoT existentes no mercado, e é além disso, completamente extensível. Existem vários \textit{plugins} desenvolvidos pela comunidade que oferecem compatibilidade para todo o tipo de dispositivos.
 
-De seguida, um pequeno resumo sobre as \textit{features} desta framework:
+De seguida, um pequeno resumo sobre as \textit{features} desta \textit{framework}:
 
 \begin{itemize}
-\item \textbf{Configuração Textual} - é possível configurar os dispositivos presentes num sistema a base de ficheiros texto. O Eclipse SmartHome possui uma DSL própria, e oferece ao mesmo tempo uma aplicação para editar ficheiros que utilizam esta linguagem, o SmartHome Designer, que oferece mecanismos \textit{auto-completion} e de validação.
+\item \textbf{Configuração Textual} - é possível configurar os dispositivos presentes num sistema à base de ficheiros de texto. O Eclipse SmartHome possui uma DSL própria, e oferece ao mesmo tempo uma aplicação para editar ficheiros que utilizam esta linguagem, o SmartHome Designer, que oferece mecanismos de \textit{auto-completion} e de validação.
 
-\item \textbf{Áudio e Voz} - o SmartHome oferece mecanismos de \textbf{\textit{Text-to-speech}} e de \textbf{\textit{Speech-to-text}} que permitem aos utilizadores, teoricamente, controlar o sistema utilizando comandos voz, utilizando o \textbf{\textit{Human Language Interpreter}} desenvolvido pela Eclipse. De momento, os idiomas suportados são o Inglês e o Alemão.
+\item \textbf{Áudio e Voz} - o SmartHome oferece mecanismos de \textbf{\textit{Text-to-speech}} e de \textbf{\textit{Speech-to-text}} que permitem aos utilizadores, teoricamente, controlar o sistema utilizando comandos de voz, utilizando o \textbf{\textit{Human Language Interpreter}} desenvolvido pela Eclipse. De momento, os idiomas suportados são o Inglês e o Alemão.
 
-\item \textbf{Rest API} - a framework oferece uma Rest API que permite a serviços externos interagirem com o sistema via pedidos HTTP. A API permite listar e configurar dispositivos e ainda oferece suporte a \textit{Server Sent Events}\cite{sse}, para que as aplicações clientes possam ser notificadas em tempo real de alterações dentro do sistema.
+\item \textbf{Rest API} - a framework oferece uma Rest API que permite a serviços externos interagirem com o sistema via pedidos HTTP. A API permite listar e configurar dispositivos e ainda oferece suporte a \textit{Server Sent Events}\cite{sse}, para que as aplicações cliente possam ser notificadas em tempo real de alterações dentro do sistema.
 
 \item \textbf{Regras} - essencial para qualquer sistema de \textit{home-automation}, com esta framework é possível definir regras que automatizam o sistema, por exemplo, fechar os estores quando o vento está acima de uma certa velocidade ou fechar as portas da garagem a partir de uma certa hora.
 
-\newpage
-
-A framework deixa definir estas regras textualmente, um exemplo:
+A framework deixa definir estas regras textualmente, como por exemplo em:
 
 \begin{Verbatim}
 ON item_id state changed
@@ -147,15 +154,21 @@ ON item_id state changed
         THEN item_id2.state = desired_value2
 \end{Verbatim}
 
-\item \textbf{Internacionalização} - todos os elementos desta framework podem ser internacionalizados, desde que sejam providenciados os coretos ficheiros, neste caso, ficheiros de propriedades i18n Java.
+Esta regra monitoriza o item identificado pelo \textit{item\_id}, colocando o estado \textit{item\_id2} com o \textit{desired\_value2} quando o estado do \textit{item\_id} corresponde ao \textit{desired\_value}. Este tipo de regras é útil para automatizar um dispositivo com base no estado de um outro dispositivo.
 
-\item \textbf{Interfaces Gráficos} - esta framework oferece bastantes elementos para o desenvolvimento de interfaces gráficos, como icones, widgets, entre outros. Além disso, existem mecanismos para definir interfaces através de ficheiros texto. Estes ficheiros são \textit{sitemaps}, que define que dispositivos e que informações sobre os mesmos e mecanismos de controlo aparecem no interface gráfico.
+\item \textbf{Internacionalização} - todos os elementos desta \textit{framework} podem ser internacionalizados, desde que sejam providenciados ficheiros de internacionalização, neste caso, ficheiros de propriedades i18n Java. Um ficheiro de internacionalização possui as regras para converter todos os textos presentes na \textit{framework} para a linguagem desejada.
+
+\item \textbf{Interfaces Gráficos} - esta \textit{framework} oferece bastantes elementos para o desenvolvimento de interfaces gráficos, como ícones, \textit{widgets}, entre outros. Além disso, existem mecanismos para definir interfaces através de ficheiros texto. Estes ficheiros são \textit{sitemaps}, que define que dispositivos e que informações sobre os mesmos e mecanismos de controlo aparecem no interface gráfico.
+
+Na Figura 5 poderemos ver o menu principal, podendo aceder às diversas zonas do espaço casa.
 
 \begin{figure}[H]
   \centering
         \includegraphics[scale=0.7]{img/smarthome-gui.png}
   \caption{Exemplo da interface gráfica do SmartHome}
 \end{figure}
+
+Na Figura 6 já podemos ver os controlos mais específicos da zona \textit{garden} (jardim), onde podemos fechar e abrir a porta da garagem e do terraço.
 
 \begin{figure}[H]
   \centering
@@ -165,7 +178,9 @@ ON item_id state changed
 
 \end{itemize}
 
-\subsection{Arquitetura}
+\subsubsection{Arquitetura}
+
+De seguida iremos rever a arquitetura desta \textit{framework}, recorrendo à própria documentação da mesma \cite{eclipse-smarthome-docs} para expor as principais funcionalidades e mais-valias.
 
 O Eclipse SmartHome diferencia a sua arquitetura em dois paradigmas, o paradigma físico, que representa o estado físico do sistema, ou seja, dos dispositivos e serviços ligados aos SmartHome, e o paradigma funcional, que representa as funcionalidades do sistema disponíveis ao utilizador. Resumidamente, o paradigma físico é útil para a configuração do sistema e resolução de problemas, e o paradigma funcional é útil para a interação entre os utilizadores e o sistema.
 
@@ -175,7 +190,7 @@ A nível aplicacional, o paradigma físico é representado por \textbf{Things} e
 
 \textbf{Items} representam as funcionalidades utilizadas pelas aplicações, neste caso, os interfaces gráficos e a lógica de automação. Estes \textbf{Items} são porventura ligados a \textbf{Thing Channels}  através de links.
 
-De seguida, os tipos de \textbf{Items} presentes nesta framework:
+Os tipos de \textbf{Items} presentes nesta \textit{framework} estão detalhados na tabela 1.
 
 \begin{table}[H]
 \centering
@@ -200,26 +215,30 @@ De seguida, os tipos de \textbf{Items} presentes nesta framework:
 
 Os vários dispositivos e serviços web são então disponibilizados na framework recorrendo a \textbf{Bindings}, que disponibilizam estes serviços através dum conjunto de \textbf{Things}.
 
-Além disso, o SmartHome alia este mecanismo com o seu serviço de \textbf{Inbox \& Discovery}, que permite à framework procurar dispositivos compatíveis na rede e a adicionar-los a uma \textbf{Inbox}, para posterior configuração.
+Além disso, o SmartHome alia este mecanismo com o seu serviço de \textbf{Inbox \& Discovery}, que permite à framework procurar dispositivos compatíveis na rede e a adicioná-los a uma \textbf{Inbox}, para posterior configuração.
 
 No entanto, a verdadeira configuração dos sistemas são feitos através de configuração textual, onde se podem especificar as \textbf{Things} dum sistema, juntamente com as suas configurações, como por exemplo, endereços IPs e afins. Além disto, também são especificados que tipos de \textbf{Items} irão ser retirados dos \textbf{Thing Channels}
 
-De seguida, um pequeno exemplo de como a \textbf{Binding} do YahooWeather funciona.
+Vamos agora observar como a \textbf{Binding} do YahooWeather funciona.
 
-A \textbf{binding} disponibiliza o serviço de meterologia sobre o formato de um \textbf{thing}, que tem como parametros de configuração a \textbf{location}, local a analisar, e o outro parâmetro é o \textbf{refresh}, que define a taxa de atualização em segundos dos dados da meteorologia.
+A \textbf{binding} disponibiliza o serviço de meteorologia sobre o formato de um \textbf{thing}, que tem como parâmetros de configuração a \textbf{location}, local a analisar, e o outro parâmetro é o \textbf{refresh}, que define a taxa de atualização em segundos dos dados da meteorologia.
 
-Esta \textbf{thing} possui então 3 \textbf{channels}:
+Esta \textbf{thing} possui então 3 \textbf{channels}, como podemos ver na tabela 2:
 
+\begin{table}[H]
 \begin{tabular}{lll}
 \textbf{Channel ID}                        & \textbf{Item Type}                   & \textbf{Description}                                                     \\ \hline
 \multicolumn{1}{|l|}{temperature} & \multicolumn{1}{l|}{Number} & \multicolumn{1}{l|}{The current temperature in degrees Celsius} \\ \hline
 \multicolumn{1}{|l|}{humidity}    & \multicolumn{1}{l|}{Number} & \multicolumn{1}{l|}{The current humidity in \%}                 \\ \hline
 \multicolumn{1}{|l|}{pressure}    & \multicolumn{1}{l|}{Number} & \multicolumn{1}{l|}{The current pressure in millibar (hPa)}     \\ \hline
 \end{tabular}
+\caption{\textit{Channels} na \textit{binding} do YahooWeather}
+\label{smarthomechannels}
+\end{table}
 
-Comparando esta situação a um paradigma orientado a objeto, os \textbf{channels} são semelhantes a métodos e a \textbf{thing} representa um objeto, com os \textbf{items} a atuar quase como tipos de dados.\\\\
+Comparando esta situação ao paradigma orientado a objetos, os \textbf{channels} são semelhantes a métodos e a \textbf{thing} representa um objeto, com os \textbf{items} a atuar quase como tipos de dados.\\\\
 
-De seguida, a configuração textual deste exemplo:
+Por fim, temos então a configuração textual desta \textit{binding}, para a poder tornar operacional.
 
 \paragraph*{Things}
 \noindent

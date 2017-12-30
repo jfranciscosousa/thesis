@@ -1,5 +1,5 @@
 \section{Tecnologias}
-De seguida serão apresentadas as tecnologias utilizadas para implementar a solução. Cada componente de software, o \textit{hub}, a \textit{api}, as simulações dos dispositivos e e aplicação cliente utilizam linguagens e \textit{frameworks} distintas. Aqui, iremos falar das motivações para a sua escolha.
+De seguida serão apresentadas as tecnologias utilizadas para implementar a solução. Cada componente de software, o \textit{hub}, o \textit{middleware}, as simulações dos dispositivos e a aplicação cliente utilizam linguagens e \textit{frameworks} distintas. De seguida, iremos entender as motivações para a sua escolha.
 
 \paragraph*{Hub}
 Para o desenvolvimento deste componente recorreu-se à utilização da linguagem de programação Java, recorrendo à \textit{framework} Spark \footnote{\url{http://sparkjava.com}}.
@@ -8,24 +8,24 @@ Java foi uma escolha óbvia devido à experiência na linguagem e ao seu poder n
 
 A \textit{framework} Spark foi escolhida devido à necessidade de expor um serviço HTTP sem ser necessário associar a um modelo arquitetural, por exemplo, algumas \textit{frameworks} são feitas para utilizar MVC. Neste caso, esta \textit{framework}, que até pode ser considerado uma biblioteca devido à sua simplicidade, tem apenas como função expor um servidor HTTP.
 
-Além do Spark, também foram utilizadas mais algumas tecnologias de relevo, nomeadamente clientes HTTP e CoAP, Jersey\footnote{\url{https://jersey.github.io/}} e Californium\footnote{\url{https://www.eclipse.org/californium/}} respetivamente, assim como uma biblioteca de reflexões\footnote{\url{https://github.com/ronmamo/reflections}} para desenvolver mecanismos de meta-programação, e por fim a conhecida biblioteca de serialização de objetos Jackson\footnote{\url{https://github.com/FasterXML/jackson}}.
+Além do Spark, também foram utilizadas mais algumas tecnologias de relevo, nomeadamente clientes HTTP e CoAP, Jersey\footnote{\url{https://jersey.github.io/}} e Californium\footnote{\url{https://www.eclipse.org/californium/}} respetivamente, que basicamente oferecem APIs para poder operar com os respetivos protocolos.  Além disto, foi utilizada uma biblioteca de reflexões\footnote{\url{https://github.com/ronmamo/reflections}} para possibilitar o desenvolvimento de mecanismos de meta-programação, e por fim a conhecida biblioteca de serialização de objetos Jackson\footnote{\url{https://github.com/FasterXML/jackson}}.
 
-\paragraph*{Api}
+\paragraph*{\textit{Middleware}}
 Este componente, sendo o mais complexo de todos, necessita de uma \textit{framework} mais evoluída, portanto decidiu-se utilizar \textit{Ruby on Rails} e portanto a linguagem de programação \textit{Ruby}.
 
 Esta \textit{framework} foi uma escolha óbvia, mais uma vez devido à experiência em trabalhos académicos passados, e também devido à simplicidade de utilização. Utilizando \textit{Ruby on Rails} podemos dedicar mais tempo a funcionalidades em vez de detalhes de implementação. Outra motivação é a existência de um bom suporte de \textit{background tasks}, que como já se falou anteriormente, era um desafio a enfrentar, para se poder implementar as tarefas automatizadas.
 
 Utilizando esta \textit{framework}, tarefas como a camada de \textit{ORM}, filtragem de parâmetros dos pedidos HTTP, serialização de objetos para \textit{JSON} são todas tratadas pelo \textit{Rails}, podendo dar assim mais atenção a outros aspetos mais importantes da aplicação.
 
-No ecossistema do Ruby a utilização de dependências externas é extremamente facilitada com o mecanismo das \textit{rubygems}, um módulo que efetua a gestão das dependências. Utilizando este mecanismo, é possível incluir um ficheiro denominado por \textit{Gemfile}, que lista todas as dependências externas da aplicação. Assim incluímos várias dependências essenciais, como o próprio \textit{Rails} por exemplo, o \textit{Delayed Job} que permite uma declaração de tarefas em segundo plano de modo mais simples, assim como a sua extensão \textit{Delayed Cron Job}, que permite definir tarefas com base numa expressão \textit{cron}, muito útil para definir as nossas \textit{Timed Tasks}.
+No ecossistema do Ruby a utilização de dependências externas é extremamente facilitada com o mecanismo das \textit{rubygems}, um módulo que efetua a gestão das dependências. Utilizando este mecanismo, é possível incluir um ficheiro denominado por \textit{Gemfile}, que lista todas as dependências externas da aplicação. Assim incluímos várias dependências essenciais, como por exemplo, o próprio \textit{Rails} o \textit{Delayed Job} que permite uma declaração de tarefas em segundo plano de modo mais simples, assim como a sua extensão \textit{Delayed Cron Job}, que permite definir tarefas com base numa expressão \textit{cron}, muito útil para definir as nossas \textit{Timed Tasks}.
 
 \paragraph*{Simulação de Dispositivos}
 
-Para as simulações de dispositivos recorreu-se à linguagem Javascript com o \textit{runtime serverside} Node.JS, utilizando a framework \textit{express} \footnote{\url{https://expressjs.com/}}. A combinação de \textit{javascript} com o \textit{express} permite muito rapidamente desenvolver servidores web, uma vez que estes simuladores irão fornecer APIs HTTP.
+Para as simulações de dispositivos recorreu-se à linguagem Javascript com o \textit{runtime serverside} Node.JS, utilizando a framework \textit{express} \footnote{\url{https://expressjs.com/}}, que opera dum modo muito semelhante à \textit{framework Spark}, que utilizamos no \textit{hub}. A combinação de \textit{javascript} com o \textit{express} permite muito rapidamente desenvolver servidores web, uma vez que estes simuladores irão fornecer APIs HTTP.
 
-Também se utilizou a biblioteca \textit{coap-router} \footnote{\url{https://github.com/MagicCube/coap-router}}, que possui um funcionamento muito semelhante ao \textit{express}, para criar os dispositivos que utilizam CoAP em vez de HTTP, como protocolo de comunicação.
+Também se utilizou a biblioteca \textit{coap-router} \footnote{\url{https://github.com/MagicCube/coap-router}}, que possui um funcionamento muito semelhante ao \textit{express} e ao \textit{Spark}, para criar os dispositivos que utilizam CoAP em vez de HTTP, como protocolo de comunicação.
 
-De seguida, parte do código que compõe a simulação de um dispositivo do tipo \textit{light}
+De seguida, parte do código que compõe a simulação de um dispositivo do tipo \textit{light}:
 \begin{minted}{js}
   app.get("/status", function (req, res) {
     console.log(`RECEIVED GET REQUEST: ${JSON.stringify(req.body)}`);
@@ -39,7 +39,7 @@ De seguida, parte do código que compõe a simulação de um dispositivo do tipo
   });
 \end{minted}
 
-Este pequeno script expõe um serviço numa porta determinada na invocação do mesmo (ou 80 por defeito), que possui duas rotas para o URL \textit{''/status''} uma utilizando o método GET e outra o PUT, permitindo ''desligar'' e ''ligar'' esta luz imaginária manipulando o estado do equipamento através de um objeto JSON que o descreve, como por exemplo:
+Este pequeno script expõe um serviço numa porta determinada na invocação do mesmo (ou 80 por omissão), que possui duas rotas para o URL \textit{''/status''} uma utilizando o método GET e outra o PUT, permitindo ''desligar'' e ''ligar'' esta luz imaginária manipulando o estado do equipamento através de um objeto JSON que o descreve, como por exemplo:
 
 \begin{minted}{js}
   {
@@ -49,9 +49,9 @@ Este pequeno script expõe um serviço numa porta determinada na invocação do 
 
 Foram feitos outros scripts muito semelhantes a este, mudando apenas o formato do objeto, para fechaduras, estações meteorológicas, termostatos e sensores de movimento. Quando a dispositivos que utilizam CoAP, apenas se simulou dispositivos do tipo lâmpada.
 
-\paragraph*{\textit{Wrapper} da \textit{api}}
+\paragraph*{\textit{Wrapper} do \textit{middleware}}
 
-Este componente, como já foi explicado na arquitetura, providencia um adaptador para a \textit{api} do \textit{middleware} na linguagem da aplicação cliente, que neste caso, vai ser \textit{Javascript}. 
+Este componente, como já foi explicado na arquitetura, providencia um adaptador para a API do \textit{middleware} na linguagem da aplicação cliente, que neste caso, vai ser \textit{Javascript}. 
 
 Este componente é bastante simples, tendo apenas que fornecer uma API utilizando a linguagem, onde internamente faz uso da API em HTTP desenvolvida para este \textit{middleware}.
 
@@ -75,7 +75,7 @@ class Users {
 }
 \end{minted}
 
-No \textit{wrapper}, utilizamos a biblioteca \textit{axios}\footnote{\url{https://github.com/axios/axios}}, um cliente HTTP muito utilizado em aplicações desenvolvidas em \textit{Javascript}, para interagir com os \textit{endpoints} da \textit{api} do \textit{middleware}, que opera utilizando o protocolo HTTP.
+No \textit{wrapper}, utilizamos a biblioteca \textit{axios}\footnote{\url{https://github.com/axios/axios}}, um cliente HTTP muito utilizado em aplicações desenvolvidas em \textit{Javascript}, para interagir com os \textit{endpoints} da API do \textit{middleware}, que opera utilizando o protocolo HTTP.
 
 O \textit{wrapper} oferece uma classe base que contêm vários módulos, um para cada \textit{endpoint} da API. Cada módulo é também uma classe, que é instanciada utilizando o cliente HTTP \textit{axios}.
 
@@ -109,7 +109,7 @@ class HomewatchApi {
 
 A classe base da API pode ser instanciada com dois argumentos, \textit{url} que é uma string que indica o \textit{endpoint} da API, que apenas é variável neste contexto de desenvolvimento. Num ambiente de produção seria o endereço fixo da API, e um valor booleano \textit{cache} que ativa o \textit{caching} dos pedidos GET feitos à API. Também temos um atributo \textit{auth}, que deve conter um \textit{token} de autenticação devolvido pelo método \textit{login} da API.
 
-De seguida poderemos então ver em ação o funcionamento deste \textit{wrapper}:
+Neste excerto de código poderemos então ver em ação o funcionamento deste \textit{wrapper}:
 
 \begin{minted}{js}
   async function exemplo(){
@@ -131,7 +131,19 @@ De seguida poderemos então ver em ação o funcionamento deste \textit{wrapper}
   }
 \end{minted}
 
-Todos os métodos do \textit{wrapper} devolvem \textit{Promises}, um mecanismo que facilita a programação assíncrona muito predominante nesta linguagem, devido a esta ser maioritariamente utilizada em contextos de aplicações clientes interativas. Uma \textit{Promise} é um objeto que representa uma operação assíncrona que irá ser completada no futuro, podendo também falhar. Neste exemplo, utilizamos o mecanismo \textit{async/await} introduzido pelo ES6, uma revisão da especificação do \textit{Ecmascript} onde o \textit{Javascript} é uma implementação deste, que facilita imenso a programação assíncrona neste ambiente.
+Todos os métodos do \textit{wrapper} devolvem \textit{Promises}\footnote{\url{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise}}, um mecanismo que facilita a programação assíncrona muito predominante nesta linguagem, devido a esta ser maioritariamente utilizada em contextos de aplicações clientes interativas. Uma \textit{Promise} é um objeto que representa uma operação assíncrona que irá ser completada no futuro, podendo também falhar.
+
+Neste exemplo, utilizamos o mecanismo \textit{async/await} introduzido pelo ES6, uma revisão da especificação do \textit{Ecmascript} onde o \textit{Javascript} é uma implementação deste, que facilita imenso a programação assíncrona neste ambiente. De seguida podemos ver como se utilizaria o \textit{wrapper} sem este mecanismo.
+
+\begin{minted}{js}
+  homewatch.users.login(jose).then(function(user) {
+    homewatch.auth = user.data.jwt;
+    
+    homewatch.user.currentUser().then(...).catch(...)
+  }).catch((err) => console.error(err));
+\end{minted}
+
+Como podemos ver, a \textit{Promise} retornada pelo método \textit{login} possui outros dois métodos \textit{then} e \textit{catch}, onde o primeiro representa o caso onde a \textit{Promise} é terminada e o segundo representa um caso de erro. O problema deste mecanismo é a verbosidade na especificação de tarefas sequenciais, onde teríamos de efetuar \textit{nesting} de vários níveis para poder executar essas tarefas.
 
 \paragraph*{Aplicação Cliente}
 
@@ -141,6 +153,6 @@ O \textit{Ionic} é essencialmente um ajudante à conversão de uma aplicação 
 
 Como esta \textit{framework} utiliza o \textit{Angular}, temos que recorrer a \textit{Typescript}, uma alternativa ao \textit{Javascript} que basicamente adiciona \textit{type safety} à linguagem. De notar que, apesar de não ser \textit{Javascript}, que é a linguagem onde se desenvolveu o \textit{wrapper}, podemos utilizar-lo na mesma, uma vez que em \textit{Typescript} podemos ter dependências em módulos \textit{Javascript} na mesma.
 
-Esta abordagem oferece algumas vantagens e também desvantagens onde neste caso, as primeiras superam as últimas. É possível desde já desenvolver aplicações para 3 sistemas operativos recorrendo à mesma \textit{codebase}, o que é incrível por si só, permitindo ainda desenvolver as aplicações com linguagens feitas para aplicações gráficas, que é o caso do HTML, JS (Typescript neste caso) e CSS, mais fáceis de utilizar do que as alternativas, Java, Swift e C\#. No entanto, também temos algumas desvantagens, sendo a performance um deles, porque é muito difícil combater com código nativo, uma vez que estamos essencialmente a correr a nossa aplicação num \textit{stripped down browser}, e o acesso às APIs nativas também é um problema, porque apesar de o \textit{Ionic} fornecer \textit{wrappers} a estas, nem todas são acessíveis através dum ambiente como este.
+Esta abordagem oferece algumas vantagens e também desvantagens sendo que neste caso, as primeiras superam as últimas. É possível desde já desenvolver aplicações para 3 sistemas operativos recorrendo à mesma base de código, o que é incrível por si só, permitindo ainda desenvolver as aplicações com linguagens feitas para aplicações gráficas, que é o caso do HTML, JS (Typescript neste caso) e CSS, mais fáceis de utilizar do que as alternativas, Java, Swift e C\#. No entanto, também temos algumas desvantagens, sendo a performance um deles, porque é muito difícil combater com código nativo, uma vez que estamos essencialmente a correr a nossa aplicação num \textit{stripped down browser}, e o acesso às APIs nativas também é um problema, porque apesar de o \textit{Ionic} fornecer \textit{wrappers} a estas, nem todas são acessíveis através dum ambiente como este.
 
-Esta \textit{framework} facilitou imenso o processo de desenvolvimento desta aplicação, que não era o foco da dissertação, mas permitiu mesmo assim apresentar algo onde se pudesse testar toda a aplicação num contexto mais semelhante ao mundo real, onde um utilizador pudesse realmente usufruir das abordagens aqui feitas. Neste capítulo não vamos abordar mais nem o \textit{wrapper} nem esta aplicação, deixando isso para o capítulo 8, onde vamos ver a aplicação em ação de modo a que as funcionalidades do \textit{middleware} fiquem mais claras.
+Esta \textit{framework} facilitou imenso o processo de desenvolvimento desta aplicação, que não era o foco da dissertação, mas permitiu mesmo assim apresentar algo onde se pudesse testar toda a aplicação num contexto mais semelhante ao mundo real, onde um utilizador pudesse realmente usufruir das abordagens aqui feitas. No capítulo 8 vamos poder ver a aplicação em funcionamento, para demonstrar as funcionalidades do \textit{middleware}.

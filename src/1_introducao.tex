@@ -2,18 +2,18 @@
 
 \chapter{Introdução}
 Tem surgido recentemente \textit{frameworks} existentes nos principais sistemas operativos de dispositivos móveis, iOS e Android, que pretendem reunir e disponibilizar informações sensoriais recolhidas em diversos ambientes, mas com predominância para o ''espaço casa''.
-Além das frameworks existentes nos sistemas operativos referidos existem uma série de outras APIs proprietárias dos diversos fabricantes.
+Além das frameworks existentes nos sistemas operativos referidos existem uma série de outras APIs proprietárias dos mais diversos fabricantes.
 
-O objetivo desta dissertação consiste no estudo das diferentes APIs e na proposta arquitetural de um \textit{mashup} ''cloud based'' que possibilite a gestão integrada das diversas APIs assim como a oferta de uma camada de serviço aplicacional para novas aplicações.
+O objetivo desta dissertação consiste no estudo das diferentes APIs e na proposta arquitetural de um \textit{mashup} baseado na \textit{cloud} que possibilite a gestão integrada das diversas APIs assim como a oferta de uma camada de serviço aplicacional para novas aplicações.
 Este \textit{middleware} deverá ter mecanismo de registo de novas APIs, criar mecanismos de registo e, ainda, recolher informações de diversas APIs proprietárias.
 
-Inicialmente, irá ser feita uma análise do estado da arte, incluindo  um estudo sobre tecnologias existentes no campo da \textit{Internet of Things} assim como trabalhos académicos relacionados. Ambos serão utilizados como base teórica para o desenvolvimento do projeto. As tecnologias a analisar em detalhe serão o Android Things e o Weave \cite{android-things}, a plataforma para desenvolvimento de soluções IoT e o protocolo de comunicação desenvolvidos pela Google, o Apple Homekit \cite{homekit}, o serviço base para as aplicações orientadas a casas inteligentes da Apple, e, por fim, o Eclipse SmartHome, a framework open-source para desenvolvimento de soluções IoT orientadas às casas inteligentes.
+Inicialmente, irá ser feita uma análise do estado da arte, incluindo  um estudo sobre tecnologias existentes no campo da \textit{Internet of Things} assim como trabalhos académicos relacionados. Ambos serão utilizados como base teórica para o desenvolvimento do projeto. As tecnologias a analisar em detalhe serão o Android Things e o Weave \cite{android-things}, a plataforma para desenvolvimento de soluções IoT e o protocolo de comunicação desenvolvidos pela Google, o Apple Homekit \cite{homekit}, o serviço base para as aplicações orientadas a casas inteligentes da Apple, e, por fim, o Eclipse SmartHome, a \textit{framework open-source} para desenvolvimento de soluções IoT orientadas às casas inteligentes.
 
-O middleware a desenvolver deverá fazer a ligação entre os dispositivos do espaço casa e as aplicações cliente, oferecendo as funcionalidades dos dispositivos através de uma API que abstrai as componentes específicas dos equipamentos. A API deverá ter os serviços necessários para a descoberta e registo dos equipamentos dos utilizadores. Todos estes serviços devem estar disponíveis num serviço cloud-based, para disponibilizar o acesso remoto, mas seguro, aos dispositivos do utilizador, e para também oferecer integração com os vários serviços e aplicações já existentes na cloud.
+O \textit{middleware} a desenvolver deverá fazer a ligação entre os dispositivos do espaço casa e as aplicações cliente, oferecendo as funcionalidades dos dispositivos através de uma API que abstrai as componentes específicas dos equipamentos. A API deverá ter os serviços necessários para a descoberta e registo dos equipamentos dos utilizadores. Todos estes serviços devem estar disponíveis num serviço \textit{cloud-based}, para disponibilizar o acesso remoto, mas seguro, aos dispositivos do utilizador, e para também oferecer integração com os vários serviços e aplicações já existentes na \textit{cloud}.
 
-O serviço fará uso de edge devices, pontos de entrada para a rede do utilizador, que irão agregar os dados dos dispositivos da rede local assim como efetuar a gestão de dispositivos. O serviço cloud em vez de comunicar com os dispositivos diretamente, comunica através do edge device. Desta maneira, tarefas como a descoberta de dispositivos e agregação de dados serão feitas localmente, poupando assim os recursos computacionais do serviço cloud. Isto portanto assemelha-se a um panorama de edge computing \cite{edge}, onde os dados são processados perto da fonte da origem, neste caso, as casas dos utilizadores.
+O serviço fará uso de \textit{edge devices}, dispositivos que servem de pontos de entrada para as redes dos utilizadores, fornecendo uma API uniforme para acesso aos dispositivos presentes, independentemente do tipo de protocolos e APIs fornecidas por cada um. O serviço \textit{cloud} em vez de comunicar com os dispositivos diretamente, comunica através da API do \textit{edge device}. Desta maneira, tarefas como a descoberta de dispositivos e conversão de protocolos serão feitas localmente, efetuando uma separação de conceitos, tendo a camada de conversão de APIs nos \textit{edge devices} e a lógica da gestão dos dispositivos e funcionalidades avançadas no serviço \textit{cloud}. Isto portanto assemelha-se a um panorama de \textit{edge computing} \cite{edge}, onde neste caso efetuamos parte do processamento de dados perto da fonte dos mesmos, recorrendo a estes \textit{edge devices}.
 
-Esta camada de serviço deverá oferecer mecanismos para o registo de novas API proprietárias, de modo a que novos dispositivos que possam surgir no mercado possam ser integrados no serviço sem grandes esforços. Vários protocolos de comunicação deverão ser suportados de modo a que se estenda o número de dispositivos compatíveis. Os protocolos mais comuns nesta área são o HTTP (\textit{Hyper Text Transfer Protocol}, MQTT (\textit{Message Queue Telemetry Transport}) e CoAP (\textit{Constrained Application Protocol}).
+Esta camada de serviço deverá oferecer mecanismos para o registo de novas API proprietárias, de modo a que novos dispositivos que possam surgir no mercado possam ser integrados no serviço sem grandes esforços. Vários protocolos de comunicação deverão ser suportados de modo a que se extenda o número de dispositivos compatíveis. Os protocolos mais comuns nesta área são o HTTP (\textit{Hyper Text Transfer Protocol}, MQTT (\textit{Message Queue Telemetry Transport}) e CoAP (\textit{Constrained Application Protocol}).
 
 Os utilizadores deverão ter a possibilidade de configurar as interações entre os seus dispositivos através de um sistema de ''triggers'', onde os dispositivos serão acionados com base no valor de outros dispositivos ou até serviços web, como por exemplo, ligar as luzes de uma sala a partir das 19 horas. Esta funcionalidade é bastante importante, uma vez que deixando esta componente de parte, perde-se grande parte da automação que se quer alcançar neste ambiente.
 
@@ -23,10 +23,15 @@ Pretende-se demonstrar a exequibilidade da abordagem criando uma aplicação mó
 
 \section{Objetivos}
 
+Vamos agora delinear os objetivos a cumprir durante o desenvolvimento desta dissertação.
+
 \begin{itemize}
-\item Efetuar estudo sobre a oferta de dispositivos e soluções IoT, como as já acima referidas (Homekit, Brillo, entre outras), identificados as suas mais valias e problemas.
-\item Desenvolver uma API que opere na cloud, que unifique as diversas APIs e frameworks orientadas a IoT, para que possam ser usada por outras aplicações. Esta API deve basear-se das mais valias das frameworks estudadas, tentando resolver os seus problemas.
+\item Efetuar estudo sobre a oferta de dispositivos e soluções IoT, como as já acima referidas (Homekit, Brillo, entre outras), identificando as suas mais valias e problemas.
+
+\item Desenvolver uma API que opere na \textit{cloud}, que unifique as diversas APIs e \textit{frameworks} orientadas a IoT, para que possa ser usada por outras aplicações. Esta API deve basear-se nas mais valias das \textit{frameworks} estudadas, tentando resolver os seus problemas.
+
 \item Permitir a extensibilidade do serviço, de maneira a que possam ser adicionadas mais APIs proprietárias, mantendo o serviço atualizado sem grandes complicações.
-\item Desenvolver uma aplicação mobile que faça uso desta API e que permita demonstrar as capacidades da mesma, no que toca à abstração dos serviços proprietários e à automatização de comportamentos e gestão do espaço casa
+
+\item Desenvolver um \textit{case study}, sob a forma de uma aplicação mobile, que faça uso desta API e que permita demonstrar as capacidades da mesma, no que toca à abstração dos serviços proprietários e à automatização de comportamentos e gestão do espaço casa
 \end{itemize}
 

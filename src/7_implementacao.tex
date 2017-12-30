@@ -6,18 +6,18 @@ Após a definição da arquitetura, foram criados no sistema de controlo de vers
 \begin{itemize}
     \item Simuladores de dispositivos - \url{https://github.com/um-homewatch/api}
     \item \textit{Hub} - \url{https://github.com/um-homewatch/hub}
-    \item \textit{Api} - \url{https://github.com/um-homewatch/stub-devices}
+    \item \textit{Middleware} - \url{https://github.com/um-homewatch/stub-devices}
     \item \textit{Wrapper} da \textit{api} - \url{https://github.com/um-homewatch/js-wrapper}
     \item Aplicação cliente - \url{https://github.com/um-homewatch/app}
 \end{itemize}
 
-A ordem dos repositórios também ditam a ordem de implementação dos mesmos, seguindo a metodologia incremental e iterativa, onde os componentes foram implementados incrementalmente. O \textit{hub}, a \textit{api} e o \textit{wrapper} exibem todo o método de \textit{continuous integration}, recorrendo ao \textit{GitHub} e ao \textit{Travis}, enquanto que a \textit{api} é \textit{deployed} no \textit{Heroku}.
+A ordem dos repositórios também ditam a ordem de implementação dos mesmos, seguindo a metodologia incremental e iterativa, onde os componentes foram implementados incrementalmente. O \textit{hub}, o \textit{middleware} e o \textit{wrapper} exibem todo o método de \textit{continuous integration}, recorrendo ao \textit{GitHub} e ao \textit{Travis}, enquanto que o \textit{middleware} é \textit{deployed} no \textit{Heroku}.
 
 \input{src/7_implementacao_1}
 
-\section{Detalhes}
+\section{Detalhes da Implementação}
 
-Nesta secção irão ser detalhados alguns aspetos de uma importância acrescida, como o mecanismo de \textit{tunneling} que efetua a ligação entre vários \textit{hubs} e a \textit{api}, assim como elementos de meta-programação que permitem o crescimento do sistema em termos de dispositivos suportados, reduzindo o tempo de implementação e a manutenibilidade destes componentes. Também alguns aspetos de segurança, muito importante em contextos de IoT, vão ser explicados em mais detalhe.
+Nesta secção irão ser detalhados alguns aspetos de uma importância acrescida, como o mecanismo de \textit{tunneling} que efetua a ligação entre vários \textit{hubs} e o \textit{middleware}, assim como elementos de meta-programação que permitem o crescimento do sistema em termos de dispositivos suportados, reduzindo o tempo de implementação e a manutenibilidade destes componentes. Também alguns aspetos de segurança, muito importante em contextos de IoT, vão ser explicados em mais detalhe.
 
 \input{src/7_implementacao_2_1}
 \input{src/7_implementacao_2_2}

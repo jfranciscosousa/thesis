@@ -1,7 +1,7 @@
 
 \subsection{Hub}
 
-Como já foi visto anteriormente, o \textit{hub} tem como função agregar as APIs dos vários dispositivos de um espaço casa, numa API HTTP RESTful a ser consumida pelo \textit{core} do \textit{middleware}, a \textit{api}. No geral, foi concebida uma arquitetura seguindo o padrão MVC. Neste caso, o \textit{model} são os dispositivos, as \textit{views} os estado dos mesmos, enquanto que os \textit{controllers} aceitam os mais diversos parâmetros para estabelecer a comunicação com um dispositivo.
+Como já foi visto anteriormente, o \textit{hub} tem como função agregar as APIs dos vários dispositivos de um espaço casa, numa API HTTP RESTful a ser consumida pelo \textit{middleware}. No geral, foi concebida uma arquitetura seguindo o padrão MVC. Neste caso, o \textit{model} são os dispositivos, as \textit{views} os estado dos mesmos, enquanto que os \textit{controllers} aceitam os mais diversos parâmetros para estabelecer a comunicação com um dispositivo.
 
 %
 %
@@ -15,7 +15,9 @@ Inicialmente foram definidas classes base para os diversos tipos de \textit{thin
 
 O processo de escolha nos atributos que compõem o estado dos dispositivos consiste na análise do funcionamento comum entre os diversos dispositivos no mercado, ou seja, apenas foi decidido colocar atributos que estão presentes em grande maioria dos dispositivos. Por exemplo, certas lâmpadas \textit{premium} oferecem regulação de luminosidade e cor, mas grande parte das lâmpadas no mercado não oferecem essa funcionalidade. Uma solução para isto poderia ser incluir os campos extra na mesma, não apresentado o seu valor caso não existissem, mas para o âmbito desta dissertação decidiu-se manter o estado dos dispositivos simples, para efeitos de demonstração.
 
-As \textit{things} não possuem muitas funcionalidades em comum, mas foram mesmo assim integradas num interface que possui dois métodos de utilidade. A partir de uma \textit{thing} deveremos obter a sua representação textual, por exemplo, a classe \textit{Lock} tem a representação textual \textit{lock}. Também deveremos obter a \textit{factory} que cria os serviços (definição dos mesmos mais à frente) que interagem com os dispositivos respetivos.
+As \textit{things} não possuem muitas funcionalidades em comum, mas foram mesmo assim integradas num interface que possui dois métodos de utilidade. A partir de uma \textit{thing} deveremos obter a sua representação textual, por exemplo, a classe \textit{Lock} tem a representação textual \textit{lock}. Também deveremos obter a \textit{factory} que cria os serviços (definição dos mesmos na Figura 13) que interagem com os dispositivos respetivos.
+
+De seguida, na Figura 11, podemos então observar os diversos tipos de \textit{things} e os seus atributos, assim como o interface base, que define as funcionalidades comuns a todos os tipos de \textit{things}.
 
 \begin{figure}[H]
   \centering
@@ -34,7 +36,7 @@ As \textit{things} não possuem muitas funcionalidades em comum, mas foram mesmo
 
 Posto isto, teremos agora que idealizar a comunicação com os dispositivos. Neste caso faremos o uso de serviços, classes que possuem métodos para interagir com um dispositivo específico. Os serviços podem partilhar funcionalidade, como métodos para comunicação HTTP, e portanto esse tipo de funcionalidades estão encapsuladas em classes abstratas auxiliares. Neste caso, além do serviço base, temos também o serviço HTTP e CoAP, que possuem métodos auxiliares para comunicar com dispositivos que utilizem os protocolos respetivos.
 
-Para cada subtipo de uma \textit{thing} deve existir um serviço. Como já vimos anteriormente, um subtipo representa um modelo especifico do dispositivo, e como cada subtipo exige um tipo de comunicação e interação diferente, é portanto necessário ter um serviço para cada um. No diagrama abaixo vemos os serviços para os subtipos da \textit{thing} do tipo \textit{light}, \textit{coap} e \textit{rest}.
+Para cada subtipo de uma \textit{thing} deve existir um serviço. Como já vimos anteriormente, um subtipo representa um modelo especifico do dispositivo, e como cada subtipo exige um tipo de comunicação e interação diferente, é portanto necessário ter um serviço para cada um. Na Figura 12 podemos vemos os serviços para os subtipos da \textit{thing} do tipo \textit{light}, \textit{coap} e \textit{rest}.
 
 \begin{figure}[H]
   \centering
@@ -54,11 +56,13 @@ Os restantes serviços serão de seguida enumerados, indicando as classes abstra
     \item \textit{rest motionsensor} -> RestMotionSensor -> HttpThingService<MotionSensor>
 \end{itemize}
 
-Os serviços possuem todos os parâmetros para efetuar comunicação com um dispositivo, nomeadamente o seu endereço, porta de acesso, entre outros. Estes parâmetros são fornecidos ao \textit{hub} nas chamadas à sua API e por ventura são passados aos serviços. O método \textit{setAttributes}, fornecido pela classe abstrata \textit{Attributed}, aceita um \textit{array} associativo, ou por outras palavras, um \textit{map}, que contém todos os atributos necessários para o seu funcionamento. Caso faltem atributos ou estes tenham formatos inválidos, deverá ser lançado um erro, uma exceção, ou um qualquer mecanismo da linguagem para assinalar \textit{inputs} inválidos. Apesar dos \textit{setters} e dos \textit{getters} presentes nos serviços, este método permite definir os atributos tendo apenas uma instância de \textit{ThingService}, sem saber a classe concreta da instância.
+Os serviços possuem todos os parâmetros para efetuar comunicação com um dispositivo, nomeadamente o seu endereço, porta de acesso, entre outros. Estes parâmetros são fornecidos ao \textit{hub} nas chamadas à sua API e podem ser passados aos serviços. O método \textit{setAttributes}, fornecido pela classe abstrata \textit{Attributed}, aceita um \textit{map}, que contém todos os atributos necessários para o seu funcionamento. Caso faltem atributos ou estes tenham formatos inválidos, deverá ser lançado um erro, uma exceção, ou um qualquer mecanismo da linguagem para assinalar \textit{inputs} inválidos. Apesar dos \textit{setters} e dos \textit{getters} presentes nos serviços, este método permite definir os atributos tendo apenas uma instância de \textit{ThingService}, sem saber a classe concreta da instância.
 
 As instâncias concretas dos serviços não são de acesso público, apenas o interface base e as extensões abstratas. Decidiu-se proceder desta maneira para reduzir o acoplamento entre os serviços e as outras partes da aplicação, nomeadamente os \textit{controllers} que recebem parâmetros das chamadas à API e que comunicam com os dispositivos, utilizando os serviços para isso. Assim sendo, todos os serviços serão instanciados através de \textit{factories}, que recebem um subtipo e devolvem uma instância dum serviço referente ao subtipo dado. Mais uma vez, é por esta razão que definiu-se o método \textit{setAttributes}, para efetuar o \textit{assign} dos atributos sem ter acesso à classe específica de uma instância de um serviço.
 
-A classe auxiliar \textit{Attributed}, em termos lógicos, basicamente assinala isto que já foi exposto, uma classe que permite mudar o seu estado interno, ou por outras palavras, os seus atributos, através de um \textit{map} entre o nome do atributo e o seu valor. Este comportamento foi extraído do serviço porque é utilizado noutros pontos da aplicação, nomeadamente a descoberta de serviços, que utiliza este mecanismo pelas mesmas razões supracitadas.
+Por exemplo, se criarmos um \textit{HueLightService} através de uma \textit{LightServiceFactory} iremos obter um objeto cuja classe concreta é um \textit{ThingService<Light>}, ou seja, não conseguimos aceder aos métodos específicos da classe \textit{HueLightService} ou até da mesmo do \textit{HttpThingService}. Utilizando o método \textit{setAttributes}, conseguimos atribuir os valores desejados aos parâmetros do serviço, não sendo necessário recorrer aos métodos da classe concreta, oferecendo-nos uma grande flexibilidade.
+
+A classe auxiliar \textit{Attributed}, em termos lógicos, assinala o que já foi exposto, uma classe que permite mudar o seu estado interno, ou por outras palavras, os seus atributos, através de um \textit{map} que associe o nome do atributo ao seu valor. Este comportamento foi extraído do serviço porque é utilizado noutros pontos da aplicação, nomeadamente a descoberta de serviços, que utiliza este mecanismo pelas mesmas razões supracitadas.
 
 Os dispositivos do tipo base \textit{NetworkThingService} requerem todos um endereço e uma porta, que poderão ser passados à instância de um serviço através dos seus \textit{setters}, no entanto, não podemos fazer tal coisa, porque apenas interagimos com instâncias do tipo \textit{ThingService}, devido ao acesso privado das classes concretas. Para resolver isso utilizamos o método \textit{setAttributes}, como já se falou anteriormente. Classes que recorrem a parâmetros adicionais, como o \textit{HueLightService}, que faz uso do novo parâmetro \textit{lightID}, devem voltar a implementar o método \textit{setAttributes} para acomodar o novo parâmetro.
 
@@ -100,7 +104,7 @@ Tal como foi explicado no \textit{design} das \textit{factories}, os \textit{con
   \caption{Diagrama de classes: \textit{Controllers}}
 \end{figure}
 
-O \textit{ThingController} é instanciado com uma \textit{ThingServiceFactory}, e possui dois métodos, \textit{get} e \textit{put}, que correspondem aos verbos HTTP GET e PUT, seguindo assim uma metodologia \textit{restful}, onde temos os recursos (\textit{things}) e utilizamos verbos HTTP para interagir com os recursos. O método \textit{put} tem como objetivo alterar o estado de um dispositivo dado um \textit{request} e uma \textit{response}, objetos que representam um pedido e uma resposta HTTP, normalmente de uma \textit{framework} de desenvolvimento de servidores web. O método \textit{get} serve apenas para retornar o estado atual de um dispositivo. Ambos estes métodos retornam uma \textit{string}, que representa a resposta da API em JSON a um qualquer pedido.
+O \textit{ThingController} é instanciado com uma \textit{ThingServiceFactory}, e possui dois métodos, \textit{get} e \textit{put}, que correspondem aos operações HTTP GET e PUT, seguindo assim uma metodologia \textit{restful}, onde temos os recursos (\textit{things}) e utilizamos operações HTTP para interagir com os recursos. O método \textit{put} tem como objetivo alterar o estado de um dispositivo dado um \textit{request} e uma \textit{response}, objetos que representam um pedido e uma resposta HTTP, normalmente de uma \textit{framework} de desenvolvimento de servidores web. O método \textit{get} serve apenas para retornar o estado atual de um dispositivo. Ambos estes métodos retornam uma \textit{string}, que representa a resposta da API em JSON a um qualquer pedido.
 
 Internamente, o \textit{controller} recebe um pedido, retira o parâmetro subtipo dos parâmetros deste, cria um serviço através da \textit{factory}, utiliza o método \textit{setAttributes} atribuindo os restantes parâmetros, e depois chama o método correspondente no serviço, ou \textit{get} ou \textit{put}.
 
@@ -130,7 +134,7 @@ Neste caso apenas possuímos um único serviço de descoberta, \textit{NetworkTh
 
 Todos os subtipos são cobertos por esta estratégia de descoberta, exceto um, o subtipo \textit{owm}, que como se baseia num serviço remoto, não necessita de mecanismos de descoberta.
 
-Concebida a arquitetura dos serviços, é preciso unir tudo e criar um \textit{controller} para expor esta funcionalidade, mas antes disso, ainda falta resolver de alguns detalhes. Primeiro, está novamente presente o problema encontrado nos \textit{thing services}, onde temos vários objetos distintos, tornando a sua instanciação um processo complexo. Para resolver isto, basta adicionar um outro método às \textit{factories}, que devolve uma implementação de um \textit{DiscoveryService} compatível com o \textit{subtipo}.
+Concebida a arquitetura dos serviços, é preciso unir tudo e criar um \textit{controller} para expor esta funcionalidade, mas antes disso, ainda falta resolver alguns detalhes. Primeiro, está novamente presente o problema encontrado nos \textit{thing services}, onde temos vários objetos distintos, tornando a sua instanciação um processo complexo. Para resolver isto, basta adicionar um outro método às \textit{factories}, que devolve uma implementação de um \textit{DiscoveryService} compatível com o \textit{subtipo}.
 
 \begin{figure}[H]
   \centering
@@ -138,7 +142,7 @@ Concebida a arquitetura dos serviços, é preciso unir tudo e criar um \textit{c
   \caption{Diagrama de classes: \textit{Factories atualizadas para suportar serviços de descoberta}}
 \end{figure}
 
-Assim, temos um mecanismo para obter a estratégia de descoberta de um determinado subtipo, simplificando todo esse processo da escolha da estratégia num novo método nas \textit{factories}. Os \textit{controllers} então só têm que trabalhar com instâncias de \textit{DiscoveryService}, utilizando o método \textit{setAttributes} da classe abstrata \textit{Attributed} para passar os parâmetros recebidos pelo \textit{controller}.
+Assim, temos um mecanismo para obter a estratégia de descoberta de um determinado subtipo, simplificando todo esse processo da escolha da estratégia num novo método nas \textit{factories}. Os \textit{controllers} só têm que trabalhar com instâncias de \textit{DiscoveryService}, utilizando o método \textit{setAttributes} da classe abstrata \textit{Attributed} para passar os parâmetros recebidos pelo \textit{controller}.
 
 Por fim, efetua-se a conceção dos \textit{controllers} que expõem os serviços de descoberta. Estes \textit{controllers}, têm um funcionamento muito semelhante aos \textit{controllers} dos serviços das \textit{things}. Este tipo de \textit{controllers} só possui suporte para métodos do tipo GET, retornando uma lista de dispositivos disponíveis na rede local, e os parâmetros necessários para o seu funcionamento.
 
@@ -156,9 +160,9 @@ O \textit{controller} extrai o subtipo fornecido nos parâmetros, utilizando a \
 
 Concluindo o desenho arquitetural, agora prossegue-se à definição da API HTTP que irá ser consumida pelo \textit{core} do \textit{middleware}.
 
-Uma API HTTP é normalmente constituída por recursos, identificados por um URL, e pelas ações disponíveis em cada um. Uma ação é identificada pelo verbo HTTP, como já foi demonstrado no \textit{design} dos \textit{controllers}. Exemplos de verbos HTTP podem ser o GET, que tem como função a simples obtenção de um recurso, e o PUT, que tem como função a alteração de um recurso existente.
+Uma API HTTP é normalmente constituída por recursos, identificados por um URL, e pelas ações disponíveis em cada um. Uma ação é identificada pelo operações HTTP, como já foi demonstrado no \textit{design} dos \textit{controllers}. Exemplos de operações HTTP podem ser o GET, que tem como função a simples obtenção de um recurso, e o PUT, que tem como função a alteração de um recurso existente.
 
-Posto isto, temos primeiros os URLs de acesso aos dispositivos, cada um com suporte para operações GET e PUT, onde o GET retorna o estado do dispositivo e o PUT permite alterar o estado do dispositivo.
+Posto isto, temos os URLs de acesso aos dispositivos, cada um com suporte para operações GET e PUT, onde o GET retorna o estado do dispositivo e o PUT permite alterar o estado do dispositivo. Mesmo de seguida podemos ver as rotas de acesso aos dispositivos:
 
 \begin{verbatim}
             /devices/lights
@@ -176,7 +180,7 @@ Os parâmetros de acesso, como o endereço IP do dispositivo, devem ser passados
 
 Este exemplo permite estabelecer contacto com um dispositivo do tipo \textit{light} e do subtipo \textit{rest}, utilizando o endereço \textit{foo.light.local} e a porta 80 como parâmetros de rede. Internamente, este pedido e os seus parâmetros são passados ao \textit{ThingController} e depois este trata de completar a operação em causa.
 
-Com ambos os verbos HTTP, a resposta a uma chamada da API do \textit{hub} é um objeto do tipo \textit{thing} serializado para JSON. O corpo dos pedidos do tipo PUT também deve seguir a mesma estrutura e formato. De seguida podemos observar um objeto do tipo \textit{light} no formato JSON.
+Com ambas as operações HTTP, a resposta a uma chamada da API do \textit{hub} é um objeto do tipo \textit{thing} serializado para JSON. O corpo dos pedidos do tipo PUT também deve seguir a mesma estrutura e formato. De seguida podemos observar um objeto do tipo \textit{light} no formato JSON.
 
 \begin{verbatim}
             {
@@ -184,7 +188,7 @@ Com ambos os verbos HTTP, a resposta a uma chamada da API do \textit{hub} é um 
             }
 \end{verbatim}
 
-Todas as variáveis de instância de qualquer \textit{thing} são convertidas na serialização, de modo a que as restantes representações em JSON dos outros tipos podem ser inferidas através da figura \ref{fig:things-hub}.
+Todas as variáveis de instância de qualquer \textit{thing} são convertidas na serialização, de modo a que as restantes representações em JSON dos outros tipos podem ser inferidas através da Figura \ref{fig:things-hub}.
 
 As rotas para interagir com os serviços de descoberta têm o seguinte formato:
 
@@ -219,8 +223,8 @@ Basicamente trata-se de uma lista JSON com os dispositivos encontrados. Internam
 
 \paragraph*{Segurança}
 
-Como em todos os projetos de IoT, a segurança é um tópico importantíssimo e o este projeto não é diferente nesse aspeto. Para atingir níveis aceitáveis de segurança efetuamos um método de autenticação à base de \textit{tokens}, de modo a garantir acesso exclusivo de um \textit{hub} à \textit{api}.
+Como em todos os projetos de IoT, a segurança é um tópico importantíssimo e o este projeto não é diferente nesse aspeto. Para atingir níveis aceitáveis de segurança efetuamos um método de autenticação à base de \textit{tokens}, de modo a garantir acesso exclusivo de um \textit{hub} ao \textit{middleware}.
 
-O processo é muito simples, a aplicação irá ter um \textit{controller} e uma rota associado a este, que permite a aquisição de um \textit{token} que garanta o acesso exclusivo aos recursos do \textit{hub}. Este \textit{token} deverá ser obtido pela \textit{api}, no momento em que o utilizador efetua a configuração do seu \textit{hub} através da aplicação cliente, e daí em diante todos os pedidos feitos ao \textit{hub} do utilizador devem ser acompanhados de este \textit{token}, presente no cabeçalho do pedido HTTP, no campo \textit{Authorization}. 
+O processo é muito simples, a aplicação irá ter um \textit{controller} e uma rota associado a este, que permite a aquisição de um \textit{token} que garanta o acesso exclusivo aos recursos do \textit{hub}. Este \textit{token} deverá ser obtido pelo \textit{middleware} no momento em que o utilizador efetua a configuração do seu \textit{hub}, através da aplicação cliente, e daí em diante todos os pedidos feitos ao \textit{hub} do utilizador devem ser acompanhados de este \textit{token}, presente no cabeçalho do pedido HTTP, no campo \textit{Authorization}. 
 
 De notar que até que um \textit{token} seja adquirido, o \textit{hub} encontra-se desprotegido, mas após a aquisição este fica completamente bloqueado a pedidos que não possuam este \textit{token}. Também é necessário que apesar deste mecanismo, não é o nosso trabalho aumentar a proteção dos dispositivos a que o \textit{hub} acede, apenas os protegemos do acesso externo feito a partir da API do \textit{hub}, o trabalho de proteger os dispositivos de ataques diretos aos mesmos está ao cabo dos fabricantes.

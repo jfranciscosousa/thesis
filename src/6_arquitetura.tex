@@ -1,10 +1,24 @@
 \chapter{Arquitetura}
 
-Delineado os objetivos, vamos proceder para a elaboração da arquitetura do serviço, falando dos componentes num alto nível de abstração antes de mergulhar nos detalhes tecnológicos e de implementação. Aqui vamos detalhar com mais rigor as funcionalidades base do sistema assim como as entidades que o compõem.
+Delineado os objetivos, vamos proceder para a elaboração da arquitetura do serviço, falando dos componentes num alto nível de abstração antes de fornecer mais detalhes tecnológicos e de implementação. Aqui vamos detalhar com mais rigor as funcionalidades base do sistema assim como as entidades que o compõem.
 
 \section{Sistema}
 
-O \textit{middleware}, devido ao seu tamanho e à sua complexidade, não será composto apenas por um único elemento de software, sendo composto por vários elementos mais concisos, cada um resolvendo um conjunto de problemas. Neste caso iremos dividi-lo em duas partes, \textit{hub} e \textit{api}, dois componentes de software que fornecem APIs RESTful , uma para uso interno e outra para uso externo respetivamente, ambas seguindo as recomendações de Leonard Richardson no seu livro sobre serviços web \textit{RESTful} \cite{richardson2013restful}. Além destes dois elementos que compõem o \textit{middleware}, também serão desenvolvidas as simulações dos dispositivos, pequenas aplicações que irão simular o funcionamento dos diversos tipos de dispositivos, e por fim, uma aplicação cliente que faça uso de todas as funcionalidades oferecidas por esta plataforma.
+Este sistema, devido ao seu tamanho e à sua complexidade, não será composto apenas por um único elemento de software, sendo composto por vários elementos mais concisos, cada um resolvendo um conjunto de problemas. Neste caso iremos dividi-lo em duas partes, \textit{hub} e \textit{middleware}, dois componentes de software que fornecem APIs RESTful , uma para uso interno e outra para uso externo respetivamente, ambas seguindo as recomendações de Leonard Richardson no seu livro sobre serviços web \textit{RESTful} \cite{richardson2013restful}. Além destes dois elementos que compõem o \textit{middleware}, também serão desenvolvidas as simulações dos dispositivos, pequenas aplicações que irão simular o funcionamento dos diversos tipos de dispositivos, e por fim, uma aplicação cliente que faça uso de todas as funcionalidades oferecidas por esta plataforma.
+
+\subsection{Visão Geral}
+
+Um espaço casa deverá possui um \textit{hub} instalado, e o \textit{middleware} comunica com os dispositivos do espaço através deste equipamento. Com isto separamos um componente complexo do \textit{middleware}, a camada de compatibilidade entre os diversos modelos de dispositivos, tornando todo o sistema mais fácil de manter.
+
+\begin{figure}[H]
+  \centering
+        \includegraphics[scale=0.7]{img/arquitetura.png}
+  \caption{Visão Geral dos Sistemas}
+\end{figure}
+
+Aqui o acesso aos dispositivos será abstraído graças ao \textit{software} que irá operar no \textit{gateway/hub}. Apenas o \textit{middleware} irá ter acesso ao \textit{hub}, sendo que irá ser desenvolvido algum mecanismo de segurança de maneira a que se rejeite o acesso indevido ao \textit{hub} dos utilizadores. De notar que apesar deste mecanismo de segurança proteger o \textit{hub}, os dispositivos deverão ter as suas próprias medidas de segurança, garantidas pelos seus fabricantes.
+
+As aplicações clientes e serviços de terceiros poderão aceder ao \textit{middleware} recorrendo à API HTTP ou utilizando os \textit{wrappers} desenvolvidos.
 
 \subsection{Hub}
 
@@ -12,15 +26,15 @@ O \textit{hub} consiste no conceito \textit{edge device} que já foi abordado an
 
 Este componente será pré-instalado e configurado em dispositivos que deverão depois ser fornecidos aos utilizadores (num caso de utilização em massa). Neste caso de demonstração académica, será utilizado um Raspberry PI para simular este dispositivo. O serviço irá correr como um \textit{daemon} nestes dispositivos, sendo iniciado durante o processo de \textit{boot}.
 
-Este componente deverá fornecer uma API HTTP RESTtful, que permita interagir com os dispositivos no espaço casa, de acesso exclusivo à \textit{api}. O \textit{hub} deverá ter métodos \textit{GET} e \textit{PUT}, para manipular os dispositivos. Este métodos deverão ser acompanhados de parâmetros que identificam um dispositivo, como por exemplo, endereço IP, porta de acesso, e outros parâmetros exclusivos a um dispositivo. Estes parâmetros deverão ser obtidos em parte pelo sistema de descoberta de dispositivos presente neste componente, que procura no espaço casa dispositivos compatíveis, retornando os seus parâmetros de acesso.
+Este componente deverá fornecer uma API HTTP RESTtful, que permita interagir com os dispositivos no espaço casa, de acesso exclusivo ao \textit{middleware}. O \textit{hub} deverá ter métodos \textit{GET} e \textit{PUT}, para manipular os dispositivos. Este métodos deverão ser acompanhados de parâmetros que identificam um dispositivo, como por exemplo, endereço IP, porta de acesso, e outros parâmetros exclusivos a um dispositivo. Estes parâmetros deverão ser obtidos em parte pelo sistema de descoberta de dispositivos presente neste componente, que procura no espaço casa dispositivos compatíveis, retornando os seus parâmetros de acesso.
 
-O \textit{hub} é portanto \textit{stateless}, ou seja, não armazena nenhum tipo de informação ao longo do seu funcionamento, essa função está ao encargo da \textit{api}, que vamos detalhar já de seguida. Além disso, este componente irá ser exposto através de um software de \textit{tunneling}, que como já foi visto anteriormente, é uma melhor opção do que UPNP e \textit{port-forwarding} para a exposição de recursos em redes locais.
+O \textit{hub} é portanto \textit{stateless}, ou seja, não armazena nenhum tipo de informação ao longo do seu funcionamento, essa função está ao encargo do \textit{middleware}, que vamos detalhar já de seguida. Além disso, este componente irá ser exposto através de um software de \textit{tunneling}, que como já foi visto anteriormente, é uma melhor opção do que UPNP e \textit{port-forwarding} para a exposição de recursos em redes locais.
 
-\subsection{Api}
+\subsection{Middleware}
 
-A \textit{api} contém toda a lógica relacionada com utilizadores, casas, dispositivos e a manipulação de cenários e tarefas. Este componente é o típico servidor aplicacional com acesso a base de dados que contém toda a lógica de negócio do sistema. A \textit{api}, tal como o \textit{hub}, deverá fornecer uma API HTTP, seguindo também uma arquitetura \textit{REST}. Esta API será de acesso público, contrastando com a API do \textit{hub} que é de acesso exclusivo ao \textit{middleware}.
+O \textit{middleware} contém toda a lógica relacionada com utilizadores, casas, dispositivos e a manipulação de cenários e tarefas. Este componente é o típico servidor aplicacional com acesso a base de dados que contém toda a lógica de negócio do sistema. Este componente, tal como o \textit{hub}, deverá fornecer uma API HTTP, seguindo também uma arquitetura \textit{REST}. Esta API será de acesso público, contrastando com a API do \textit{hub} que é de acesso exclusivo ao \textit{middleware}.
 
-Dado que o \textit{hub} é um componente \textit{stateless}, a \textit{api} deverá armazenar os parâmetros de acesso aos dispositivos. Além disso, todos as funcionalidades do \textit{hub} devem ser acessíveis a partir da API, efetuando reencaminhamento das aplicações clientes para o \textit{hub}.
+Dado que o \textit{hub} é um componente \textit{stateless}, o \textit{middleware} deverá armazenar os parâmetros de acesso aos dispositivos. Além disso, todos as funcionalidades do \textit{hub} devem ser acessíveis a partir da API, efetuando reencaminhamento das aplicações clientes para o \textit{hub}.
 
 Tudo isto irá consistir num sistema de tamanho médio composto essencialmente de operações \textit{CRUD}, tornando-se mais complexo na área das tarefas automatizadas, onde provavelmente se deverá investir em alguma \textit{framework} de \textit{background jobs} para monitorizar e controlar dispositivos assincronamente, sem criar carga adicional no servidor aplicacional.
 
@@ -48,30 +62,17 @@ Um \textit{wrapper} converteria estas comunicações HTTP para métodos de uma l
 \end{minted}
 
 
-Internamente o \textit{wrapper} faria a chamada à API remota e devolveria o resultado respetivo, um objeto em vez de uma resposta HTTP, fazendo toda a serialização automaticamente. Isto permite retirar uma grande porção de código que se iria repetir em todas as aplicações clientes. Neste caso, irá ser desenvolvido um \textit{wrapper} para a \textit{api} do \textit{middleware} na linguagem que for utilizada na aplicação cliente.
+Internamente o \textit{wrapper} faria a chamada à API remota e devolveria o resultado respetivo, um objeto em vez de uma resposta HTTP, fazendo toda a serialização automaticamente. Isto permite retirar uma grande porção de código que se iria repetir em todas as aplicações clientes. Neste caso, irá ser desenvolvido um \textit{wrapper} para o \textit{middleware} na linguagem que for utilizada na aplicação cliente.
 
 \subsection{Aplicação Cliente}
 
-Como prova de conceito irá ser desenvolvida uma aplicação \textit{mobile}, em linguagem e sistema operativo mais à frente. A aplicação deverá fazer uma demonstração de todas as funcionalidades e operações que o \textit{middleware} implementa. Estas funcionalidades estão detalhadas na \hyperref[sec:funcionalidades]{secção} 2 do capítulo 4. Todos esses pontos serão aplicados ao resultado final da aplicação.
+Como prova de conceito irá ser desenvolvida mais à frente neste documento, uma aplicação \textit{mobile}, em linguagem e sistema operativo a detalhar. A aplicação deverá fazer uma demonstração de todas as funcionalidades e operações que o \textit{middleware} implementa. Estas funcionalidades estão detalhadas na \hyperref[sec:funcionalidades]{secção} 2 do capítulo 4. Todos esses pontos serão aplicados ao resultado final da aplicação.
 
 De notar que esta aplicação apenas foi desenvolvida para efeitos de demonstração, portanto, grande parte desta dissertação será, como é óbvio, sobre o \textit{middleware} e os seus componentes. Foi efetuado um esforço significativo para implementar boas práticas arquiteturais e de programação em todo o software desenvolvido, mas a aplicação cliente poderá ficar um pouco aquém dos restantes elementos.
 
-\subsection{Visão Geral}
-
-Um espaço casa deverá possui um \textit{hub} instalado, e a \textit{api} comunica com os dispositivos do espaço através deste equipamento. Com isto separamos uma componente complexa da \textit{api}, a camada de compatibilidade entre os diversos modelos de dispositivos, tornando todo o sistema mais manutenível.
-
-\begin{figure}[H]
-  \centering
-        \includegraphics[scale=0.7]{img/arquitetura.jpg}
-  \caption{Visão Geral dos Sistemas}
-\end{figure}
-
-Aqui o acesso aos dispositivos será abstraído graças ao \textit{software} que irá operar no \textit{gateway/hub}. Apenas a \textit{api} irá ter acesso ao \textit{hub}, sendo que irá ser desenvolvido algum mecanismo de segurança de maneira a que se rejeite o acesso indevido ao \textit{hub} dos utilizadores. De notar que apesar deste mecanismo de segurança proteger o \textit{hub}, os dispositivos deverão ter as suas próprias medidas de segurança, garantidas pelos seus fabricantes.
-
-As aplicações clientes e serviços de terceiros poderão aceder ao \textit{middleware} recorrendo à API HTTP ou utilizando os \textit{wrappers} desenvolvidos.
 \section{Análise de Domínio}
 
-Nesta fase identificam-se as classes conceptuais essenciais para resolver o problema em questão e implementar as funcionalidades desejadas. Utilizando esta abordagem, apenas se identificam conceitos do mundo real, ou seja, segundo o paradigma dos utilizadores, num alto nível de abstração. Este domínio aplica-se mais ao componente \textit{api}, que, essencialmente, representa o \textit{core} da funcionalidade do \textit{middleware}.
+Nesta fase identificam-se os conceitos essenciais para resolver o problema em questão e implementar as funcionalidades desejadas. Utilizando esta abordagem, apenas se identificam conceitos do mundo real, ou seja, segundo o paradigma dos utilizadores, num alto nível de abstração. Este domínio aplica-se mais concretamente ao  \textit{middleware}.
 
 \begin{figure}[H]
   \centering
@@ -92,7 +93,7 @@ Representa a casa de um utilizador, contém dados para aceder à rede local e in
 Todas as restantes entidades possuem uma associação direta ou indireta a um espaço casa.
 
 \paragraph*{Thing}
-Representa os dispositivos, contendo os dados necessários para efetuar comunicação com o mesmo. O \textit{hub} aceita uma lista de parâmetros para efetuar comunicação com um dispositivo compatível, mas como este é \textit{stateless}, não tem capacidade para os armazenar. Essa função pertence à \textit{api}, e é com recurso a esta entidade que se irá alcançar o objetivo pretendido.
+Representa os dispositivos, contendo os dados necessários para efetuar comunicação com o mesmo. O \textit{hub} aceita uma lista de parâmetros para efetuar comunicação com um dispositivo compatível, mas como este é \textit{stateless}, não tem capacidade para os armazenar. Essa função pertence ao \textit{middleware}, e é com recurso a esta entidade que se irá alcançar o objetivo pretendido.
 
 Cada \textit{thing} possui dois parâmetros obrigatórios: tipo e subtipo. O tipo representa a funcionalidade geral do dispositivo, por exemplo, uma luz, uma fechadura ou um termóstato. O subtipo é referente à implementação do dispositivo, ou por outras palavras, o modelo do dispositivo. Neste caso a divisão entre tipos:
 
@@ -136,9 +137,9 @@ Representam as tarefas condicionais, que são aplicadas com base no estado de um
 \paragraph*{Timed}
 Representam tarefas que são aplicadas com base numa dada expressão temporal. A tarefa ''aplicar o cenário desligar luzes às 23:00'' é deste tipo.
 
-\section{Design}
+\section{Concepção}
 
-De todos os componentes já referidos, apenas o \textit{hub} e a \textit{api} tiveram direito a um grande esforço no que toca ao desenho e elaboração da sua arquitetura utilizando diagramas, como dita o \textit{model driven development}. Os outros componentes como os simuladores de dispositivos são bastante simples e concisos, sendo que não fazem fazem parte do \textit{scope} da dissertação, sendo apenas ferramentas para demonstração. O mesmo se aplica à aplicação cliente e a componentes relacionados à demonstração, que apenas são um \textit{front-end} para demonstração do \textit{middleware}.
+De todos os componentes já referidos, apenas o \textit{hub} e o \textit{middleware} tiveram direito a um grande esforço no que toca ao desenho e elaboração da sua arquitetura utilizando diagramas, como dita o \textit{model driven development}. Os outros componentes como os simuladores de dispositivos são bastante simples e concisos, sendo que não fazem fazem parte do \textit{scope} da dissertação, sendo apenas ferramentas para demonstração. O mesmo se aplica à aplicação cliente e a componentes relacionados à demonstração, que apenas são um \textit{front-end} para demonstração do \textit{middleware}.
 
 \input{src/6_arquitetura_hub.tex}
 \input{src/6_arquitetura_api.tex}
